@@ -17,11 +17,11 @@ import java.util.List;
 @Getter
 @Setter
 public class User extends BaseEntity {
-    @Column(name = "USERNAME", unique = true)
+    @Column(name = "USERNAME")
     @NotBlank(message = "Username must not blank")
     String username;
 
-    @Column(name = "EMAIL")
+    @Column(name = "EMAIL", unique = true)
     @Email(message = "Email invalid")
     String email;
 

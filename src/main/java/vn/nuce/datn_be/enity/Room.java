@@ -8,6 +8,7 @@ import vn.nuce.datn_be.model.enumeration.RoomStatus;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "ROOM")
@@ -34,7 +35,7 @@ public class Room extends BaseEntity {
     private Date endTime;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "USER_ID", nullable = false)
     private User ownerId;
 
     @OneToMany(mappedBy = "roomId")
@@ -49,4 +50,7 @@ public class Room extends BaseEntity {
     @Column(name = "ROOM_STATUS")
     @Enumerated(EnumType.STRING)
     private RoomStatus roomStatus;
+
+    @OneToMany(mappedBy = "room")
+    Set<CandidateInfo> candidateInfos;
 }

@@ -10,7 +10,11 @@ public class CandidateService {
     @Autowired
     CandidateRepository candidateRepository;
 
-    CandidateInfo findByNumberId(Long numberId){
+    public CandidateInfo findByNumberId(Long numberId){
         return candidateRepository.findByNumberId(numberId).orElse(null);
+    }
+
+    public CandidateInfo save(CandidateInfo candidateInfo){
+        return candidateRepository.save(candidateInfo);
     }
 }

@@ -7,6 +7,6 @@ import vn.nuce.datn_be.enity.CandidateInfo;
 import java.util.Optional;
 
 @Repository
-public interface CandidateRepository extends JpaRepository<CandidateInfo, Long> {
+public interface CandidateRepository extends JpaRepository<CandidateInfo, String> {
     Optional<CandidateInfo> findByNumberId(Long numberId);
 }

@@ -10,7 +10,11 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    User findByUsername(String username){
+    public User findByUsername(String username){
         return userRepository.findByUsername(username).orElse(null);
+    }
+
+    public User save(User user){
+        return userRepository.save(user);
     }
 }
