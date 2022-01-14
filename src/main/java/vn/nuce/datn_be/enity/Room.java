@@ -22,7 +22,7 @@ public class Room extends BaseEntity {
     String name;
 
     @Column
-    String ProcessAccess;
+    String processAccess;
 
     @Column(name = "START_TIME", nullable = false)
     @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")

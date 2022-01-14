@@ -33,4 +33,6 @@ public class MonitorController {
         return new ResponseEntity<List<Room>>(roomOwnerById, HttpStatus.OK);
     }
 
+    //@GetMapping("/details-room")
+
 }
