@@ -24,4 +24,8 @@ public class CandidateService {
         return candidateRepository.findAllByRoomFk(roomId);
     }
 
+    public CandidateInfo findById(String username){
+        return candidateRepository.findById(username).orElse(null);
+    }
+
 }

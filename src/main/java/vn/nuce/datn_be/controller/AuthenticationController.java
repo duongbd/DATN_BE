@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import vn.nuce.datn_be.enity.CandidateInfo;
 import vn.nuce.datn_be.enity.User;
 import vn.nuce.datn_be.model.dto.CandidateLoginForm;
+import vn.nuce.datn_be.model.dto.LoginSuccessDto;
 import vn.nuce.datn_be.model.dto.MonitorLoginForm;
+import vn.nuce.datn_be.model.dto.ResponseBody;
 import vn.nuce.datn_be.services.CandidateService;
 import vn.nuce.datn_be.services.UserService;
 import vn.nuce.datn_be.utils.JwtUtils;
@@ -32,19 +34,26 @@ public class AuthenticationController {
     private String authenticate(String username, String password) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        authentication.getAuthorities().toArray();
         return jwtUtils.generateJwtToken(authentication);
     }
 
     @PostMapping(value = "/monitor/login")
     public ResponseEntity<?> loginMonitor(@RequestBody MonitorLoginForm monitorLoginForm) {
-        String token = authenticate(monitorLoginForm.getEmail(), monitorLoginForm.getPassword());
-        return new ResponseEntity<String>(token, HttpStatus.OK);
+        if (userService.findByEmail(monitorLoginForm.getEmail())!=null) {
+            String token = authenticate(monitorLoginForm.getEmail(), monitorLoginForm.getPassword());
+            return new ResponseEntity<>(ResponseBody.responseBodySuccess(new LoginSuccessDto(token)), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(ResponseBody.responseBodyFail("Wrong username or password"),HttpStatus.OK);
     }
 
     @PostMapping(value = "/candidate/login")
     public ResponseEntity<?> loginCandidate(@RequestBody CandidateLoginForm candidateLoginForm) {
-        String token = authenticate(candidateLoginForm.getUsername(), candidateLoginForm.getPassword());
-        return new ResponseEntity<String>(token, HttpStatus.OK);
+        if (candidateService.findById(candidateLoginForm.getUsername())!=null) {
+            String token = authenticate(candidateLoginForm.getUsername(), candidateLoginForm.getPassword());
+            return new ResponseEntity<>(ResponseBody.responseBodySuccess(new LoginSuccessDto(token)), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(ResponseBody.responseBodyFail("Wrong username or password"),HttpStatus.OK);
     }
 
     @PostMapping(value = "/monitor/sign-up")
