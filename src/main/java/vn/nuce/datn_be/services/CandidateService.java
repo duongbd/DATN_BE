@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import vn.nuce.datn_be.enity.CandidateInfo;
 import vn.nuce.datn_be.repositories.CandidateRepository;
 
+import java.util.List;
+
 @Service
 public class CandidateService {
     @Autowired
@@ -17,4 +19,9 @@ public class CandidateService {
     public CandidateInfo save(CandidateInfo candidateInfo){
         return candidateRepository.save(candidateInfo);
     }
+
+    public List<CandidateInfo> findAllCandidateByRoomId(Long roomId){
+        return candidateRepository.findAllByRoomFk(roomId);
+    }
+
 }

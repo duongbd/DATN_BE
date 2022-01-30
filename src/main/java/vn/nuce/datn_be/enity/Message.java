@@ -39,6 +39,6 @@ public class Message extends BaseEntity {
     private Date timeCreate;
 
     @ManyToOne
-    @JoinColumn(name = "room_id", nullable = false)
+    @JoinColumn(name = "ROOM_FK", nullable = false)
     private Room roomId;
 }

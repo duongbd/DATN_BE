@@ -1,5 +1,6 @@
 package vn.nuce.datn_be.enity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -31,15 +32,18 @@ public class CandidateInfo {
     @Email
     String email;
 
+    @JsonIgnore
     @Column(name = "PASSWORD")
     String password;
 
     @Column(name = "INFO")
     String info;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "CANDIDATE_STATUS")
     CandidateStatus candidateStatus;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "ROOM_FK", nullable = false, insertable = false, updatable = false)
     private Room room;

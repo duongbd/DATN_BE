@@ -15,4 +15,12 @@ public class RoomService {
     public List<Room> getListRoomOwnerById(Long userId){
         return roomRepository.findByUserFk(userId);
     }
+
+    public Room findById(Long roomId){
+        return roomRepository.findById(roomId).orElse(null);
+    }
+
+    public boolean existById(Long roomId){
+        return roomRepository.existsById(roomId);
+    }
 }

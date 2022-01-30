@@ -54,8 +54,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/auth/**").permitAll()
-                .antMatchers("/monitor/**").hasRole(RoleEnum.MONITOR.name())
-                .antMatchers("/candidate/**").hasRole(RoleEnum.CANDIDATE.name())
+                .antMatchers("/monitor/**").hasAuthority(RoleEnum.MONITOR.name())
+                .antMatchers("/candidate/**").hasAuthority(RoleEnum.CANDIDATE.name())
                 .anyRequest().authenticated();
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

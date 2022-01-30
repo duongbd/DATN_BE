@@ -35,13 +35,13 @@ public class Room extends BaseEntity {
     private Date endTime;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID", nullable = false, insertable = false,updatable = false)
+    @JoinColumn(name = "USER_FK", nullable = false, insertable = false,updatable = false)
     private User ownerId;
 
-    @JoinColumn(name ="USER_ID")
+    @Column(name ="USER_FK")
     private Long userFk;
 
-    @OneToMany(mappedBy = "roomId")
+    @OneToMany(mappedBy = "room")
     List<LogTime> logTimes;
 
     @OneToMany(mappedBy = "roomId")

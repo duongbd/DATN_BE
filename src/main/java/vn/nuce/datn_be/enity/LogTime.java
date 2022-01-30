@@ -21,6 +21,6 @@ public class LogTime extends BaseEntity {
     private Date timeCreate;
 
     @ManyToOne
-    @JoinColumn(name = "room_id", nullable = false)
-    private Room roomId;
+    @JoinColumn(name = "ROOM_FK", nullable = false)
+    private Room room;
 }

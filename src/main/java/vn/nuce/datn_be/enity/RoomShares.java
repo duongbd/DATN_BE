@@ -14,10 +14,10 @@ import javax.persistence.Table;
 @Setter
 public class RoomShares extends BaseEntity {
     @ManyToOne
-    @JoinColumn(name = "room_id")
+    @JoinColumn(name = "ROOM_ID")
     private Room roomId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "USER_ID")
     private User watcherId;
 }
