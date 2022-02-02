@@ -21,9 +21,6 @@ public class Room extends BaseEntity {
     @Column
     String name;
 
-    @Column
-    String processAccess;
-
     @Column(name = "START_TIME", nullable = false)
     @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
@@ -56,4 +53,7 @@ public class Room extends BaseEntity {
 
     @OneToMany(mappedBy = "room")
     Set<CandidateInfo> candidateInfos;
+
+    @OneToMany(mappedBy = "roomFk")
+    private List<RoomAppKey> roomAppKeys;
 }

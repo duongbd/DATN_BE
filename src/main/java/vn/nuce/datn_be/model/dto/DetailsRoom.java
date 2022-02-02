@@ -2,9 +2,12 @@ package vn.nuce.datn_be.model.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import vn.nuce.datn_be.enity.App;
 import vn.nuce.datn_be.enity.Room;
 
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,7 +16,7 @@ public class DetailsRoom {
     private Date startTime;
     private Date endTime;
     private Long ownerId;
-    private String processAccess;
+    private List<String> apps = new LinkedList<>();
     private String name;
     private String urls;
 
@@ -24,7 +27,7 @@ public class DetailsRoom {
         this.setEndTime(room.getEndTime());
         this.setStartTime(room.getStartTime());
         this.setOwnerId(room.getUserFk());
-        this.setProcessAccess(room.getProcessAccess());
+        room.getRoomAppKeys().forEach(roomAppKey -> this.getApps().add(roomAppKey.getApp().getAppName()));
         this.setName(room.getName());
         this.setUrls(room.getUrls());
     }
