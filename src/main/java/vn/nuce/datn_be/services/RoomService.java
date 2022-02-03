@@ -23,4 +23,8 @@ public class RoomService {
     public boolean existById(Long roomId){
         return roomRepository.existsById(roomId);
     }
+
+    public Room save(Room room){
+        return roomRepository.save(room);
+    }
 }
