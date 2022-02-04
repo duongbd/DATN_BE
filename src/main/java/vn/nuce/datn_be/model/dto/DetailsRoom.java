@@ -19,6 +19,7 @@ public class DetailsRoom {
     private List<String> apps = new LinkedList<>();
     private String name;
     private String urls;
+    private String status;
 
     public DetailsRoom() {
     }
@@ -30,5 +31,6 @@ public class DetailsRoom {
         room.getRoomAppKeys().forEach(roomAppKey -> this.getApps().add(roomAppKey.getApp().getAppName()));
         this.setName(room.getName());
         this.setUrls(room.getUrls());
+        this.setStatus(room.getRoomStatus().getName());
     }
 }
