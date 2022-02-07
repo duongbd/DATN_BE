@@ -40,5 +40,5 @@ public class Message extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "ROOM_FK", nullable = false)
-    private Room roomId;
+    private Room room;
 }

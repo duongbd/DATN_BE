@@ -38,6 +38,9 @@ public class UserDetailsImpl implements UserDetails {
     // for monitor
     private Long monitorId;
 
+    //for candidate
+    private String candidateId;
+
     private Collection<? extends GrantedAuthority> authorities;
 
     public static UserDetailsImpl build(User user) {
@@ -61,6 +64,7 @@ public class UserDetailsImpl implements UserDetails {
         userDetails.setCandidateNumberId(candidateInfo.getNumberId());
         userDetails.setAuthorities(authorities);
         userDetails.setPassword(candidateInfo.getPassword());
+        userDetails.setCandidateId(candidateInfo.getId());
         if (candidateInfo.getCandidateStatus() != null && candidateInfo.getCandidateStatus().equals(CandidateStatus.BLOCK)) {
             userDetails.setBlocked(true);
         }

@@ -41,19 +41,19 @@ public class Room extends BaseEntity {
     @OneToMany(mappedBy = "room")
     List<LogTime> logTimes;
 
-    @OneToMany(mappedBy = "roomId")
+    @OneToMany(mappedBy = "room")
     List<Message> messages;
 
-    @OneToMany(mappedBy = "roomId")
+    @OneToMany(mappedBy = "room")
     List<RoomShares> roomShares;
 
-    @Column(name = "ROOM_STATUS")
+    @Column(name = "ROOM_STATUS" ,nullable = false)
     @Enumerated(EnumType.STRING)
     private RoomStatus roomStatus;
 
     @OneToMany(mappedBy = "room")
     Set<CandidateInfo> candidateInfos;
 
-    @OneToMany(mappedBy = "roomFk")
+    @OneToMany(mappedBy = "room")
     private List<RoomAppKey> roomAppKeys;
 }

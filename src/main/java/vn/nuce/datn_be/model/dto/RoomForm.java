@@ -21,4 +21,6 @@ public class RoomForm {
     @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endTime;
+
+    private String name;
 }

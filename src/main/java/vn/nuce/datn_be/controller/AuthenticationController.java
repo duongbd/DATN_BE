@@ -1,5 +1,6 @@
 package vn.nuce.datn_be.controller;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,18 +10,22 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import vn.nuce.datn_be.enity.CandidateInfo;
+import vn.nuce.datn_be.enity.Room;
 import vn.nuce.datn_be.enity.User;
 import vn.nuce.datn_be.model.dto.CandidateLoginForm;
 import vn.nuce.datn_be.model.dto.LoginSuccessDto;
 import vn.nuce.datn_be.model.dto.MonitorLoginForm;
 import vn.nuce.datn_be.model.dto.ResponseBody;
+import vn.nuce.datn_be.model.enumeration.RoomStatus;
 import vn.nuce.datn_be.services.CandidateService;
+import vn.nuce.datn_be.services.RoomService;
 import vn.nuce.datn_be.services.UserService;
 import vn.nuce.datn_be.utils.JwtUtils;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/auth")
+@Log4j2
 public class AuthenticationController {
     @Autowired
     AuthenticationManager authenticationManager;
@@ -30,30 +35,39 @@ public class AuthenticationController {
     CandidateService candidateService;
     @Autowired
     JwtUtils jwtUtils;
+    @Autowired
+    RoomService roomService;
 
-    private String authenticate(String username, String password) {
+    private String authenticate(String username, String password) throws Exception {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        authentication.getAuthorities().toArray();
         return jwtUtils.generateJwtToken(authentication);
     }
 
     @PostMapping(value = "/monitor/login")
     public ResponseEntity<?> loginMonitor(@RequestBody MonitorLoginForm monitorLoginForm) {
-        if (userService.findByEmail(monitorLoginForm.getEmail())!=null) {
+        try {
             String token = authenticate(monitorLoginForm.getEmail(), monitorLoginForm.getPassword());
             return new ResponseEntity<>(ResponseBody.responseBodySuccess(new LoginSuccessDto(token)), HttpStatus.OK);
+        } catch (Exception exception) {
+            log.info(exception.getMessage());
+            return new ResponseEntity<>(ResponseBody.responseBodyFail("Wrong username or password"), HttpStatus.OK);
         }
-        return new ResponseEntity<>(ResponseBody.responseBodyFail("Wrong username or password"),HttpStatus.OK);
     }
 
     @PostMapping(value = "/candidate/login")
     public ResponseEntity<?> loginCandidate(@RequestBody CandidateLoginForm candidateLoginForm) {
-        if (candidateService.findById(candidateLoginForm.getUsername())!=null) {
+        try {
             String token = authenticate(candidateLoginForm.getUsername(), candidateLoginForm.getPassword());
-            return new ResponseEntity<>(ResponseBody.responseBodySuccess(new LoginSuccessDto(token)), HttpStatus.OK);
+            Room room = candidateService.findById(candidateLoginForm.getUsername()).getRoom();
+            if (room.getRoomStatus().equals(RoomStatus.ACTIVE)) {
+                return new ResponseEntity<>(ResponseBody.responseBodySuccess(new LoginSuccessDto(token)), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(ResponseBody.responseBodyFail("Room is not opened"), HttpStatus.OK);
+        } catch (Exception exception) {
+            log.info(exception.getMessage());
+            return new ResponseEntity<>(ResponseBody.responseBodyFail("Wrong username or password"), HttpStatus.OK);
         }
-        return new ResponseEntity<>(ResponseBody.responseBodyFail("Wrong username or password"),HttpStatus.OK);
     }
 
     @PostMapping(value = "/monitor/sign-up")

@@ -1,7 +1,7 @@
 package vn.nuce.datn_be.model.enumeration;
 
 public enum RoomStatus {
-    ACTIVE("ACTIVE"),       // đang thi
+    ACTIVE("ACTIVE"),       // đã mở
     INACTIVE("INACTIVE"),   // chưa thi
     ENDED("ENDED");         // đã thi
 

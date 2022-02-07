@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@Table(name = "ROOM_APP")
+@Table(name = "ROOM_APP_KEY")
 public class RoomAppKey extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "ROOM_FK", referencedColumnName = "id", updatable = false, insertable = false)

@@ -15,7 +15,7 @@ import javax.persistence.Table;
 public class RoomShares extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "ROOM_ID")
-    private Room roomId;
+    private Room room;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
