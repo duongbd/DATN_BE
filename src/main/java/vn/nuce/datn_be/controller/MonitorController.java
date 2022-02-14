@@ -5,25 +5,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import vn.nuce.datn_be.enity.CandidateInfo;
-import vn.nuce.datn_be.enity.Room;
-import vn.nuce.datn_be.enity.User;
+import vn.nuce.datn_be.enity.*;
 import vn.nuce.datn_be.model.dto.DetailsRoom;
 import vn.nuce.datn_be.model.dto.ResponseBody;
 import vn.nuce.datn_be.model.dto.RoomForm;
 import vn.nuce.datn_be.model.enumeration.RoomStatus;
 import vn.nuce.datn_be.security.UserDetailsImpl;
-import vn.nuce.datn_be.services.CandidateService;
-import vn.nuce.datn_be.services.RoomService;
-import vn.nuce.datn_be.services.UserService;
+import vn.nuce.datn_be.services.*;
 
 import javax.validation.Valid;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-@CrossOrigin(origins = "http://35.173.233.67/", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/monitor")
 public class MonitorController {
@@ -35,6 +34,12 @@ public class MonitorController {
 
     @Autowired
     CandidateService candidateService;
+
+    @Autowired
+    ConvertService convertService;
+
+    @Autowired
+    AppService appService;
 
     private UserDetailsImpl monitorInfoBase() {
         return (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -58,14 +63,16 @@ public class MonitorController {
 
     @PostMapping("/room/create")
     public ResponseEntity<?> postCreateRoomDefault(@Valid @RequestBody RoomForm roomForm) {
-        Room room = new Room();
-        room.setStartTime(roomForm.getStartTime());
-        room.setEndTime(roomForm.getEndTime());
-        room.setUrls(roomForm.getUrls());
-        room.setName(roomForm.getName());
-        room.setUserFk(monitorInfoBase().getMonitorId());
-        room.setRoomStatus(RoomStatus.INACTIVE);
-        return new ResponseEntity<>(new DetailsRoom(roomService.save(room)), HttpStatus.OK);
+        try {
+            Room room = roomService.saveByRoomForm(roomForm, monitorInfoBase().getMonitorId());
+
+            return room != null
+                    ? new ResponseEntity<>(ResponseBody.responseBodySuccess(new DetailsRoom(room)), HttpStatus.OK)
+                    : new ResponseEntity<>(ResponseBody.responseBodyFail("One or more apps not supported"), HttpStatus.OK);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(ResponseBody.responseBodyFail("Cannot parse date time, may be wrong format"), HttpStatus.OK);
+        }
     }
 
     @GetMapping("/list-candidate")

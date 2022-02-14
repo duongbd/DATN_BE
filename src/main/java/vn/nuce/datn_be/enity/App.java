@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @Table(name = "APP")
 public class App extends BaseEntity {
-    @Column
+    @Column(unique = true)
     String appName;
     @Column
     String processName;

@@ -3,24 +3,36 @@ package vn.nuce.datn_be.model.dto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
+import vn.nuce.datn_be.enity.Room;
 
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @Setter
 public class RoomForm {
     String urls;
 
-    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date startTime;
+    @NotBlank
+    private String startDate;
 
-    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date endTime;
+    @NotBlank
+    private String endDate;
+
+    @NotBlank
+    private String startTime;
+
+    @NotBlank
+    private String endTime;
 
     private String name;
+
+    private List<String> apps = new LinkedList<>();
 }

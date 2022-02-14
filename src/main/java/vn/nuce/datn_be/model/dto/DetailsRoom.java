@@ -6,6 +6,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import vn.nuce.datn_be.enity.App;
 import vn.nuce.datn_be.enity.Room;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,8 +16,10 @@ import java.util.List;
 @Setter
 public class DetailsRoom {
 
-    private Date startTime;
-    private Date endTime;
+    private String startDate;
+    private String endDate;
+    private String startTime;
+    private String endTime;
     private List<String> apps = new LinkedList<>();
     private String name;
     private String urls;
@@ -27,8 +31,12 @@ public class DetailsRoom {
     }
 
     public DetailsRoom(Room room) {
-        this.setEndTime(room.getEndTime());
-        this.setStartTime(room.getStartTime());
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        this.setStartDate(dateFormat.format(room.getStartTime()));
+        this.setEndDate(dateFormat.format(room.getEndTime()));
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        this.setStartTime(timeFormat.format(room.getStartTime()));
+        this.setEndTime(timeFormat.format(room.getEndTime()));
         if (room.getRoomAppKeys() != null) {
             room.getRoomAppKeys().forEach(roomAppKey -> this.getApps().add(roomAppKey.getApp().getAppName()));
         }
