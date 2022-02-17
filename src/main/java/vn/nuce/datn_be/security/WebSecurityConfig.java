@@ -56,6 +56,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/monitor/**").hasAuthority(RoleEnum.MONITOR.name())
                 .antMatchers("/candidate/**").hasAuthority(RoleEnum.CANDIDATE.name())
+//                .antMatchers("/chat/**").access("hasAuthority('MONITOR') or hasAuthority('CANDIDATE')")
+                .antMatchers("/chat/**", "/ws").permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

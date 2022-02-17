@@ -1,5 +1,6 @@
 package vn.nuce.datn_be.enity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -39,6 +40,9 @@ public class Message extends BaseEntity {
     private Date timeCreate;
 
     @ManyToOne
-    @JoinColumn(name = "ROOM_FK", nullable = false)
+    @JoinColumn(name = "ROOM_FK", insertable = false, updatable = false)
     private Room room;
+
+    @Column(name = "ROOM_FK", nullable = false)
+    private Long roomFk;
 }
