@@ -29,7 +29,7 @@ public class UserDetailsImpl implements UserDetails {
     private String name;
 
     //only for candidate
-    private long candidateNumberId;
+    private Long candidateNumberId;
 
     private String password;
 

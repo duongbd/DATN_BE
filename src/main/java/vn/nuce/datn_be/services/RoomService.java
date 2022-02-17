@@ -1,14 +1,11 @@
 package vn.nuce.datn_be.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.nuce.datn_be.enity.App;
 import vn.nuce.datn_be.enity.Room;
 import vn.nuce.datn_be.enity.RoomAppKey;
-import vn.nuce.datn_be.model.dto.ResponseBody;
 import vn.nuce.datn_be.model.dto.RoomForm;
 import vn.nuce.datn_be.model.enumeration.RoomStatus;
 import vn.nuce.datn_be.repositories.AppRepository;
@@ -34,7 +31,7 @@ public class RoomService {
     RoomAppKeyRepository roomAppKeyRepository;
 
     public List<Room> getListRoomOwnerById(Long userId) {
-        return roomRepository.findByUserFk(userId);
+        return roomRepository.findByOwnerFk(userId);
     }
 
     public Room findById(Long roomId) {
@@ -56,7 +53,7 @@ public class RoomService {
         room.setEndTime(dateFormat.parse(roomForm.getEndDate() + " " + roomForm.getEndTime()));
         room.setName(roomForm.getName());
         room.setRoomStatus(RoomStatus.INACTIVE);
-        room.setUserFk(monitorId);
+        room.setOwnerFk(monitorId);
         room=roomRepository.save(room);
         if (!roomForm.getApps().isEmpty()) {
             List<App> apps = appRepository.findAllByAppNameIn(roomForm.getApps());

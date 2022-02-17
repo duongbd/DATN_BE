@@ -9,16 +9,11 @@ import vn.nuce.datn_be.enity.*;
 import vn.nuce.datn_be.model.dto.DetailsRoom;
 import vn.nuce.datn_be.model.dto.ResponseBody;
 import vn.nuce.datn_be.model.dto.RoomForm;
-import vn.nuce.datn_be.model.enumeration.RoomStatus;
 import vn.nuce.datn_be.security.UserDetailsImpl;
 import vn.nuce.datn_be.services.*;
 
 import javax.validation.Valid;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -56,7 +51,7 @@ public class MonitorController {
     @GetMapping("/details-room")
     public ResponseEntity<?> getDetailsRoomById(@RequestParam(name = "id") Long roomId) {
         Room room = roomService.findById(roomId);
-        return room != null && room.getUserFk().equals(monitorInfoBase().getMonitorId())
+        return room != null && room.getOwnerFk().equals(monitorInfoBase().getMonitorId())
                 ? new ResponseEntity<>(ResponseBody.responseBodySuccess(new DetailsRoom(room)), HttpStatus.OK)
                 : new ResponseEntity<>(ResponseBody.responseBodyFail("Room not found"), HttpStatus.OK);
     }

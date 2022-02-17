@@ -33,10 +33,10 @@ public class Room extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "USER_FK", nullable = false, insertable = false,updatable = false)
-    private User ownerId;
+    private User owner;
 
     @Column(name ="USER_FK")
-    private Long userFk;
+    private Long ownerFk;
 
     @OneToMany(mappedBy = "room")
     List<LogTime> logTimes;

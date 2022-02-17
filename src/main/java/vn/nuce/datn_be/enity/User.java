@@ -32,7 +32,7 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "ownerId")
     List<ProfileRoom> profileRoomList;
 
-    @OneToMany(mappedBy = "ownerId")
+    @OneToMany(mappedBy = "owner")
     List<Room> roomList;
 
     @OneToMany(mappedBy = "watcherId")
