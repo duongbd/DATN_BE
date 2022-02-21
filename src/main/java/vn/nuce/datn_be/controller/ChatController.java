@@ -8,6 +8,8 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +22,8 @@ import vn.nuce.datn_be.services.MessageService;
 
 import java.util.Date;
 
-@RestController
+@Controller
+@CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RequestMapping("/chat")
 @Log4j2
 public class ChatController {

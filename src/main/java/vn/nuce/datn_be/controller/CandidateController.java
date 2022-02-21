@@ -23,7 +23,7 @@ import vn.nuce.datn_be.services.RoomService;
 import java.security.Principal;
 import java.util.Date;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RestController
 @RequestMapping("/candidate")
 public class CandidateController {
@@ -62,20 +62,16 @@ public class CandidateController {
         LogTime logTime = new LogTime();
         logTime.setTimeCreate(new Date());
         logTime.setRoomFk(candidateInfo.getRoomFk());
-        if (monitoringInfo.getMonitoringStatus().equals(MonitoringStatus.NORMAL)) {
-            logTime.setContent("CandidateId: " + candidateInfo.getId() + " - " + "numberId: " + candidateInfo.getNumberId() + " still normal");
-        }
-
-        if (monitoringInfo.getMonitoringStatus().equals(MonitoringStatus.WARN)) {
-            logTime.setContent("CandidateId: " + candidateInfo.getId() + " - " + "numberId: " + candidateInfo.getNumberId() + " has warn: " + monitoringInfo.getViolationError() + " with proof - " + monitoringInfo.getViolationInfo());
-            Runnable runnable = () -> template.convertAndSend("/notify/monitor/" + candidateInfo.getRoomFk(), monitoringInfo);
-            runnable.run();
-        }
-
-        if (monitoringInfo.getMonitoringStatus().equals(MonitoringStatus.ALERT)) {
-            logTime.setContent("CandidateId: " + candidateInfo.getId() + " - " + "numberId: " + candidateInfo.getNumberId() + " has violation: " + monitoringInfo.getViolationError() + " with proof - " + monitoringInfo.getViolationInfo());
-            Runnable runnable = () -> template.convertAndSend("/notify/monitor/" + candidateInfo.getRoomFk(), monitoringInfo);
-            runnable.run();
+        switch (monitoringInfo.getMonitoringStatus()) {
+            case NORMAL:
+                logTime.setContent("CandidateId: " + candidateInfo.getId() + " - " + "numberId: " + candidateInfo.getNumberId() + " still normal");
+                break;
+            case WARN:
+            case ALERT:
+                logTime.setContent("CandidateId: " + candidateInfo.getId() + " - " + "numberId: " + candidateInfo.getNumberId() + " has " + monitoringInfo.getMonitoringStatus() + ": " + monitoringInfo.getViolationError() + " with proof - " + monitoringInfo.getViolationInfo());
+                Runnable runnableAlert = () -> template.convertAndSend("/notify/monitor/" + candidateInfo.getRoomFk(), monitoringInfo);
+                runnableAlert.run();
+                break;
         }
         logTimeService.save(logTime);
         return new ResponseEntity<>(ResponseBody.responseBodySuccess(null), HttpStatus.OK);

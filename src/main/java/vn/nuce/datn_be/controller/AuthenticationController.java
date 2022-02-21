@@ -22,7 +22,7 @@ import vn.nuce.datn_be.services.RoomService;
 import vn.nuce.datn_be.services.UserService;
 import vn.nuce.datn_be.utils.JwtUtils;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RestController
 @RequestMapping("/auth")
 @Log4j2
