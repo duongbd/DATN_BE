@@ -11,10 +11,13 @@ import vn.nuce.datn_be.model.enumeration.RoomStatus;
 import vn.nuce.datn_be.repositories.AppRepository;
 import vn.nuce.datn_be.repositories.RoomAppKeyRepository;
 import vn.nuce.datn_be.repositories.RoomRepository;
+import vn.nuce.datn_be.utils.DatnUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,7 +25,7 @@ import java.util.List;
 @Transactional
 public class RoomService {
     @Autowired
-    RoomRepository roomRepository;
+    protected RoomRepository roomRepository;
 
     @Autowired
     AppRepository appRepository;
@@ -49,12 +52,12 @@ public class RoomService {
     public Room saveByRoomForm(RoomForm roomForm, Long monitorId) throws ParseException {
         Room room = new Room();
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        room.setStartTime(dateFormat.parse(roomForm.getStartDate() + " " + roomForm.getStartTime()));
-        room.setEndTime(dateFormat.parse(roomForm.getEndDate() + " " + roomForm.getEndTime()));
+        room.setStartTime(DatnUtils.getTimeSpecifyMinute(dateFormat.parse(roomForm.getStartDate() + " " + roomForm.getStartTime())));
+        room.setEndTime(DatnUtils.getTimeSpecifyMinute(dateFormat.parse(roomForm.getEndDate() + " " + roomForm.getEndTime())));
         room.setName(roomForm.getName());
         room.setRoomStatus(RoomStatus.INACTIVE);
         room.setOwnerFk(monitorId);
-        room=roomRepository.save(room);
+        room = roomRepository.save(room);
         if (!roomForm.getApps().isEmpty()) {
             List<App> apps = appRepository.findAllByAppNameIn(roomForm.getApps());
             if (Integer.valueOf(apps.size()).equals(roomForm.getApps().size())) {
@@ -73,10 +76,17 @@ public class RoomService {
                     finalRoom.getRoomAppKeys().add(roomAppKey);
                 });
 //                roomRepository.save(finalRoom);
-            }
-            else
-            return null;
+            } else
+                return null;
         }
         return room;
+    }
+
+    public List<Room> getAllRoomTimeOn(Date date) {
+        return roomRepository.findAllByStartTimeLessThanEqualAndRoomStatusAndEndTimeGreaterThan(date, RoomStatus.INACTIVE, date);
+    }
+
+    public List<Room> getAllRoomTimeUp(Date date) {
+        return roomRepository.findAllByEndTimeLessThanEqualAndRoomStatus(date, RoomStatus.ACTIVE);
     }
 }
