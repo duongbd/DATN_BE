@@ -57,6 +57,7 @@ public class RoomService {
         room.setName(roomForm.getName());
         room.setRoomStatus(RoomStatus.INACTIVE);
         room.setOwnerFk(monitorId);
+        room.setUrls(roomForm.getUrls());
         room = roomRepository.save(room);
         if (!roomForm.getApps().isEmpty()) {
             List<App> apps = appRepository.findAllByAppNameIn(roomForm.getApps());
