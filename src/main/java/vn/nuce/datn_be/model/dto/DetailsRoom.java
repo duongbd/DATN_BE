@@ -31,7 +31,7 @@ public class DetailsRoom {
     }
 
     public DetailsRoom(Room room) {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         this.setStartDate(dateFormat.format(room.getStartTime()));
         this.setEndDate(dateFormat.format(room.getEndTime()));
         DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");

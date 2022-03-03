@@ -22,12 +22,12 @@ public class ProfileRoom extends BaseEntity {
     String ProcessAccess;
 
     @Column(name = "START_TIME", nullable = false)
-    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     private Date startTime;
 
     @Column(name = "END_TIME", nullable = false)
-    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endTime;
 

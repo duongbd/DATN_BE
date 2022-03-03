@@ -11,9 +11,13 @@ import vn.nuce.datn_be.model.dto.ResponseBody;
 import vn.nuce.datn_be.model.dto.RoomForm;
 import vn.nuce.datn_be.security.UserDetailsImpl;
 import vn.nuce.datn_be.services.*;
+import vn.nuce.datn_be.utils.DatnUtils;
 
 import javax.validation.Valid;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,6 +39,9 @@ public class MonitorController {
 
     @Autowired
     AppService appService;
+
+    @Autowired
+    GoogleDriveManager driveManager;
 
     private UserDetailsImpl monitorInfoBase() {
         return (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -59,6 +66,12 @@ public class MonitorController {
     @PostMapping("/room/create")
     public ResponseEntity<?> postCreateRoomDefault(@Valid @RequestBody RoomForm roomForm) {
         try {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            Date startTime = DatnUtils.getTimeSpecifyMinute(dateFormat.parse(roomForm.getStartDate() + " " + roomForm.getStartTime()));
+            Date endTime = DatnUtils.getTimeSpecifyMinute(dateFormat.parse(roomForm.getEndDate() + " " + roomForm.getEndTime()));
+            if (startTime.after(endTime)){
+                return new ResponseEntity<>(ResponseBody.responseBodyFail("End time not to be before start time"), HttpStatus.OK);
+            }
             Room room = roomService.saveByRoomForm(roomForm, monitorInfoBase().getMonitorId());
 
             return room != null

@@ -16,7 +16,7 @@ public class LogTime extends BaseEntity {
     String content;
 
     @Column(name = "TIME_CREATE", nullable = false)
-    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss:SSS")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss:SSS")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeCreate;
 

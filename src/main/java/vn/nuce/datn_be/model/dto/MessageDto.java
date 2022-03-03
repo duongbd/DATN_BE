@@ -30,7 +30,7 @@ public class MessageDto {
         this.content = message.getContent();
         this.receiver = message.getReceiver();
         this.time = TimeUtils.DateToString(message.getTimeCreate(), "HH:mm:ss");
-        this.date = TimeUtils.DateToString(message.getTimeCreate(), "dd/MM/yyyy");
+        this.date = TimeUtils.DateToString(message.getTimeCreate(), "yyyy-MM-dd");
         this.sender = message.getSender();
     }
 }
