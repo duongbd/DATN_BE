@@ -90,4 +90,13 @@ public class RoomService {
     public List<Room> getAllRoomTimeUp(Date date) {
         return roomRepository.findAllByEndTimeLessThanEqualAndRoomStatus(date, RoomStatus.ACTIVE);
     }
+
+    public List<Room> searchRoom(String key, Long ownerFk) {
+        try {
+            Long keyToLong = Long.valueOf(key);
+            return roomRepository.findAllDistinctByIdOrNameStartingWithAndOwnerFk(keyToLong, key, ownerFk);
+        } catch (Exception e) {
+            return roomRepository.findAllDistinctByIdOrNameStartingWithAndOwnerFk(null, key, ownerFk);
+        }
+    }
 }

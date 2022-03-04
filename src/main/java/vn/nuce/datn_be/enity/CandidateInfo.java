@@ -9,6 +9,7 @@ import vn.nuce.datn_be.utils.RandomIdGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "CANDIDATE_INFO")
@@ -50,4 +51,7 @@ public class CandidateInfo {
 
     @Column(name = "ROOM_FK")
     private Long roomFk;
+
+    @Column(name = "NEWEST_SCREENSHOT_ID")
+    private String newestScreenShotId;
 }

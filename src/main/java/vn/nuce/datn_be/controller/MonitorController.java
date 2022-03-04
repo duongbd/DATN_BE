@@ -6,9 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import vn.nuce.datn_be.enity.*;
-import vn.nuce.datn_be.model.dto.DetailsRoom;
+import vn.nuce.datn_be.model.dto.*;
 import vn.nuce.datn_be.model.dto.ResponseBody;
-import vn.nuce.datn_be.model.dto.RoomForm;
+import vn.nuce.datn_be.model.enumeration.CandidateStatus;
 import vn.nuce.datn_be.security.UserDetailsImpl;
 import vn.nuce.datn_be.services.*;
 import vn.nuce.datn_be.utils.DatnUtils;
@@ -69,7 +69,7 @@ public class MonitorController {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             Date startTime = DatnUtils.getTimeSpecifyMinute(dateFormat.parse(roomForm.getStartDate() + " " + roomForm.getStartTime()));
             Date endTime = DatnUtils.getTimeSpecifyMinute(dateFormat.parse(roomForm.getEndDate() + " " + roomForm.getEndTime()));
-            if (startTime.after(endTime)){
+            if (startTime.after(endTime)) {
                 return new ResponseEntity<>(ResponseBody.responseBodyFail("End time not to be before start time"), HttpStatus.OK);
             }
             Room room = roomService.saveByRoomForm(roomForm, monitorInfoBase().getMonitorId());
@@ -90,5 +90,33 @@ public class MonitorController {
             return new ResponseEntity<>(ResponseBody.responseBodySuccess(candidateInfoList), HttpStatus.OK);
         }
         return new ResponseEntity<>(ResponseBody.responseBodyFail("roomId not exists"), HttpStatus.OK);
+    }
+
+    @GetMapping("/list-screen-shot-candidate-id-by-room")
+    public ResponseEntity<?> getListUrlScreenShotNewest(@RequestParam(name = "roomId") Long roomId) {
+        if (roomService.existById(roomId)) {
+            List<CandidateInfo> candidateInfoList = candidateService.findAllCandidateByRoomId(roomId);
+            List<CandidateUrlScreenShotForm> candidateUrlScreenShotForms = new LinkedList<>();
+            candidateInfoList.forEach(candidateInfo -> {
+                CandidateUrlScreenShotForm form = new CandidateUrlScreenShotForm();
+                form.setStatus(candidateInfo.getCandidateStatus());
+                form.setCandidateId(candidateInfo.getId());
+                form.setNumberId(candidateInfo.getNumberId());
+                if (candidateInfo.getCandidateStatus().equals(CandidateStatus.ONLINE) && candidateInfo.getNewestScreenShotId() != null) {
+                    form.setFileId(candidateInfo.getNewestScreenShotId());
+                }
+                candidateUrlScreenShotForms.add(form);
+            });
+            return new ResponseEntity<>(ResponseBody.responseBodySuccess(candidateUrlScreenShotForms), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(ResponseBody.responseBodyFail("roomId not exists"), HttpStatus.OK);
+    }
+
+    @GetMapping("/room/search")
+    public ResponseEntity<?> searchRoom(@RequestParam(name = "key") String key){
+        List<Room> roomList = roomService.searchRoom(key, monitorInfoBase().getMonitorId());
+        List<RoomTitleToSearch> roomTitleToSearches = new LinkedList<>();
+        roomList.forEach(room -> roomTitleToSearches.add(new RoomTitleToSearch(room)));
+        return new ResponseEntity<>(ResponseBody.responseBodySuccess(roomTitleToSearches), HttpStatus.OK);
     }
 }
