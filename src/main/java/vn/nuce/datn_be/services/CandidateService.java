@@ -27,5 +27,4 @@ public class CandidateService {
     public CandidateInfo findById(String username){
         return candidateRepository.findById(username).orElse(null);
     }
-
 }

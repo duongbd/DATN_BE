@@ -3,6 +3,7 @@ package vn.nuce.datn_be.model.dto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 import vn.nuce.datn_be.enity.Room;
 
 import javax.persistence.Temporal;
@@ -35,4 +36,6 @@ public class RoomForm {
     private String name;
 
     private List<String> apps = new LinkedList<>();
+
+    private MultipartFile file;
 }

@@ -9,6 +9,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 import java.util.TimeZone;
 
 public class DatnUtils {
@@ -43,5 +44,19 @@ public class DatnUtils {
         gmtCalendar.setTime(ret);
         gmtCalendar.add(Calendar.HOUR, gmt);
         return gmtCalendar.getTime();
+    }
+
+    public static String randomPassword(Integer length) {
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = length;
+        Random random = new Random();
+        StringBuilder buffer = new StringBuilder(targetStringLength);
+        for (int i = 0; i < targetStringLength; i++) {
+            int randomLimitedInt = leftLimit + (int)
+                    (random.nextFloat() * (rightLimit - leftLimit + 1));
+            buffer.append((char) randomLimitedInt);
+        }
+        return buffer.toString();
     }
 }

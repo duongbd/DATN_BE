@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.format.annotation.DateTimeFormat;
 import vn.nuce.datn_be.model.enumeration.CandidateStatus;
 import vn.nuce.datn_be.utils.RandomIdGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
 @Entity
 @Table(name = "CANDIDATE_INFO")
@@ -42,7 +44,7 @@ public class CandidateInfo {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "CANDIDATE_STATUS")
-    CandidateStatus candidateStatus;
+    CandidateStatus candidateStatus = CandidateStatus.OFFLINE;
 
     @JsonIgnore
     @ManyToOne
@@ -54,4 +56,12 @@ public class CandidateInfo {
 
     @Column(name = "NEWEST_SCREENSHOT_ID")
     private String newestScreenShotId;
+
+    @Column(name = "LAST_SAW")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastSaw;
+
+    @Column(name = "SEND_MAIL")
+    private Boolean sendMail = false;
 }
