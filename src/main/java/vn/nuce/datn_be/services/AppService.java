@@ -15,4 +15,8 @@ public class AppService {
     public List<App> findAllByAppNameIn(List<String> appNames){
         return findAllByAppNameIn(appNames);
     }
+
+    public List<App> findAll(){
+        return appRepository.findAll();
+    }
 }

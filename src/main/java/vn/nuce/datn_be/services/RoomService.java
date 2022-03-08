@@ -1,6 +1,8 @@
 package vn.nuce.datn_be.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.nuce.datn_be.enity.App;
@@ -8,6 +10,7 @@ import vn.nuce.datn_be.enity.Room;
 import vn.nuce.datn_be.enity.RoomAppKey;
 import vn.nuce.datn_be.model.dto.RoomForm;
 import vn.nuce.datn_be.model.enumeration.RoomStatus;
+import vn.nuce.datn_be.model.form.RoomSearchForm;
 import vn.nuce.datn_be.repositories.AppRepository;
 import vn.nuce.datn_be.repositories.RoomAppKeyRepository;
 import vn.nuce.datn_be.repositories.RoomRepository;
@@ -20,6 +23,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.startsWith;
 
 @Service
 @Transactional
@@ -98,5 +103,22 @@ public class RoomService {
         } catch (Exception e) {
             return roomRepository.findAllDistinctByIdOrNameStartingWithAndOwnerFk(null, key, ownerFk);
         }
+    }
+
+    public List<Room> findBySearchForm(RoomSearchForm searchForm) throws ParseException {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date startTime = null;
+        if (searchForm.getStartDate() != null && searchForm.getStartTime() != null) {
+            startTime = DatnUtils.getTimeSpecifyMinute(dateFormat.parse(searchForm.getStartDate() + " " + searchForm.getStartTime()));
+        }
+        Room room = new Room();
+        room.setName(searchForm.getKeyName());
+        room.setRoomStatus(searchForm.getRoomStatus());
+        room.setStartTime(startTime);
+        room.setOwnerFk(searchForm.getMonitorId());
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withIgnoreNullValues()
+                .withMatcher("name", startsWith().ignoreCase());
+        return roomRepository.findAll(Example.of(room, matcher));
     }
 }

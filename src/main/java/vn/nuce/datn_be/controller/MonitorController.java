@@ -13,6 +13,7 @@ import vn.nuce.datn_be.enity.*;
 import vn.nuce.datn_be.model.dto.*;
 import vn.nuce.datn_be.model.dto.ResponseBody;
 import vn.nuce.datn_be.model.enumeration.CandidateStatus;
+import vn.nuce.datn_be.model.form.RoomSearchForm;
 import vn.nuce.datn_be.security.UserDetailsImpl;
 import vn.nuce.datn_be.services.*;
 import vn.nuce.datn_be.utils.DatnUtils;
@@ -47,8 +48,7 @@ public class MonitorController {
     @Autowired
     GoogleDriveManager driveManager;
 
-    //    @Value("${datn.regex.email}")
-    private static String REGEX_EMAIL = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\\\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\\\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
+    private static final String REGEX_EMAIL = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\\\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\\\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
 
     private UserDetailsImpl monitorInfoBase() {
         return (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -180,5 +180,27 @@ public class MonitorController {
         List<RoomTitleToSearch> roomTitleToSearches = new LinkedList<>();
         roomList.forEach(room -> roomTitleToSearches.add(new RoomTitleToSearch(room)));
         return new ResponseEntity<>(ResponseBody.responseBodySuccess(roomTitleToSearches), HttpStatus.OK);
+    }
+
+    @GetMapping("/app/list-app-supported")
+    public ResponseEntity<?> listAppsSupported(){
+        List<String> appsName = new LinkedList<>();
+        appService.findAll().forEach(app -> appsName.add(app.getAppName()));
+        return new ResponseEntity<>(ResponseBody.responseBodySuccess(appsName),HttpStatus.OK);
+    }
+
+    @GetMapping("/room/search-room-by-form")
+    public ResponseEntity<?> searchRoomBySearchForm(@RequestBody RoomSearchForm searchForm){
+        try {
+            searchForm.setMonitorId(monitorInfoBase().getMonitorId());
+            List<Room> roomList= roomService.findBySearchForm(searchForm);
+            List<DetailsRoom> detailsRooms = new LinkedList<>();
+            roomList.forEach(room -> detailsRooms.add(new DetailsRoom(room)));
+            return new ResponseEntity<>(ResponseBody.responseBodySuccess(detailsRooms), HttpStatus.OK);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(ResponseBody.responseBodyFail("Cannot parse date time, may be wrong format"), HttpStatus.OK);
+        }
+
     }
 }
