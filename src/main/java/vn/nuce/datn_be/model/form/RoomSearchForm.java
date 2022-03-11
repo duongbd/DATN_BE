@@ -10,6 +10,5 @@ public class RoomSearchForm {
     private String keyName;
     private RoomStatus roomStatus;
     private String startDate;
-    private String startTime;
     private Long monitorId;
 }

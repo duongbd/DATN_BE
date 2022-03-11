@@ -2,17 +2,20 @@ package vn.nuce.datn_be.services;
 
 
 import lombok.extern.log4j.Log4j2;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.ModelMap;
+import vn.nuce.datn_be.enity.CandidateInfo;
 import vn.nuce.datn_be.enity.LogTime;
 import vn.nuce.datn_be.enity.Room;
 import vn.nuce.datn_be.model.enumeration.RoomStatus;
+import vn.nuce.datn_be.model.enumeration.SendMailStatus;
 import vn.nuce.datn_be.utils.DatnUtils;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import javax.mail.MessagingException;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -24,6 +27,12 @@ public class ScheduledTasks {
 
     @Autowired
     LogTimeService logTimeService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private CandidateService candidateService;
 
     @Scheduled(fixedRate = 60000)
     public void startRoomWhenTimeOn() throws InterruptedException {
@@ -81,5 +90,31 @@ public class ScheduledTasks {
             }
         });
         log.info("After sleep: " + new Date());
+    }
+
+    @Scheduled(cron = "0 0 0 ? * *", zone = "Asia/Ho_Chi_Minh")
+    public void autoSendMailToCandidate() {
+        List<Room> roomList = roomService.getListRoomNeedSendMailToCandidate();
+        roomList.forEach(room -> {
+            Set<CandidateInfo> candidateInfos = room.getCandidateInfos();
+            candidateInfos.forEach(candidateInfo -> {
+                Map<String, Object> map = new ModelMap();
+                map.put("id", candidateInfo.getId());
+                map.put("key", candidateInfo.getPassword());
+                Runnable runnableSendMail = () -> {
+                    try {
+                        emailService.sendMessageUsingThymeleafTemplate(candidateInfo.getEmail(), "INFO LOGIN ROOM " + candidateInfo.getRoom().getName().toUpperCase(), map);
+                        candidateInfo.setSendMailStatus(SendMailStatus.SEND);
+                    } catch (MessagingException e) {
+//                        e.printStackTrace();
+                        log.error(e.getMessage());
+                        candidateInfo.setSendMailStatus(SendMailStatus.FAIL);
+                    }
+                    candidateService.save(candidateInfo);
+                };
+                runnableSendMail.run();
+            });
+        });
+
     }
 }

@@ -1,5 +1,7 @@
 package vn.nuce.datn_be.services;
 
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -16,15 +18,16 @@ import vn.nuce.datn_be.repositories.RoomAppKeyRepository;
 import vn.nuce.datn_be.repositories.RoomRepository;
 import vn.nuce.datn_be.utils.DatnUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
-import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.startsWith;
+import java.util.*;
 
 @Service
 @Transactional
@@ -37,6 +40,9 @@ public class RoomService {
 
     @Autowired
     RoomAppKeyRepository roomAppKeyRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public List<Room> getListRoomOwnerById(Long userId) {
         return roomRepository.findByOwnerFk(userId);
@@ -106,19 +112,60 @@ public class RoomService {
     }
 
     public List<Room> findBySearchForm(RoomSearchForm searchForm) throws ParseException {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date startTime = null;
-        if (searchForm.getStartDate() != null && searchForm.getStartTime() != null) {
-            startTime = DatnUtils.getTimeSpecifyMinute(dateFormat.parse(searchForm.getStartDate() + " " + searchForm.getStartTime()));
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        Date startTime = DatnUtils.setTimeStartInDay(dateFormat.parse(searchForm.getStartDate()));
+
+//        Room room = new Room();
+//        room.setName(searchForm.getKeyName());
+//        room.setRoomStatus(searchForm.getRoomStatus());
+//        room.setStartTime(startTime);
+//        room.setOwnerFk(searchForm.getMonitorId());
+//        ExampleMatcher matcher = ExampleMatcher.matching()
+//                .withIgnoreNullValues()
+//                .withMatcher("name", startsWith().ignoreCase());
+//        return roomRepository.findAll(Example.of(room, matcher));
+
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Room> query = builder.createQuery(Room.class);
+        Root<Room> root = query.from(Room.class);
+        List<Predicate> predicates = new LinkedList<>();
+
+        if (searchForm.getKeyName() != null) {
+            Predicate name = builder.like(root.get("name"), searchForm.getKeyName() + "%");
+            predicates.add(name);
         }
-        Room room = new Room();
-        room.setName(searchForm.getKeyName());
-        room.setRoomStatus(searchForm.getRoomStatus());
-        room.setStartTime(startTime);
-        room.setOwnerFk(searchForm.getMonitorId());
-        ExampleMatcher matcher = ExampleMatcher.matching()
-                .withIgnoreNullValues()
-                .withMatcher("name", startsWith().ignoreCase());
-        return roomRepository.findAll(Example.of(room, matcher));
+
+        if (searchForm.getRoomStatus() != null) {
+            Predicate status = builder.equal(root.get("roomStatus"), searchForm.getRoomStatus());
+            predicates.add(status);
+        }
+
+        if (searchForm.getStartDate() != null) {
+            Predicate startDate = builder.between(root.get("startTime"), DatnUtils.setTimeStartInDay(dateFormat.parse(searchForm.getStartDate())), DatnUtils.setTimeEndInDay(dateFormat.parse(searchForm.getStartDate())));
+            predicates.add(startDate);
+        }
+        Predicate userFk = builder.equal(root.get("ownerFk"), searchForm.getMonitorId());
+        predicates.add(userFk);
+        query.where(predicates.toArray(new Predicate[0]));
+        return entityManager.createQuery(query.select(root)).getResultList();
+    }
+
+    public List<Room> getListRoomNeedSendMailToCandidate() {
+        Date startDate = DatnUtils.cvtToGmt(new Date(), 7);;
+        Date endDate = DatnUtils.cvtToGmt(new Date(), 7);
+        DatnUtils.setTimeStartInDay(startDate);
+        DatnUtils.setTimeEndInDay(endDate);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+        calendar.add(Calendar.DATE, 1);
+        startDate = calendar.getTime();
+
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.setTime(endDate);
+        calendar1.add(Calendar.DATE, 1);
+        endDate = calendar1.getTime();
+
+        return roomRepository.findAllByStartTimeBetween(startDate, endDate);
     }
 }

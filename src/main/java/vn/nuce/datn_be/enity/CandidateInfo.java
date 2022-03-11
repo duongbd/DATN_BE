@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 import vn.nuce.datn_be.model.enumeration.CandidateStatus;
+import vn.nuce.datn_be.model.enumeration.SendMailStatus;
 import vn.nuce.datn_be.utils.RandomIdGenerator;
 
 import javax.persistence.*;
@@ -62,6 +63,7 @@ public class CandidateInfo {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastSaw;
 
-    @Column(name = "SEND_MAIL")
-    private Boolean sendMail = false;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "SEND_MAIL_STATUS")
+    private SendMailStatus sendMailStatus = SendMailStatus.UNSENT;
 }

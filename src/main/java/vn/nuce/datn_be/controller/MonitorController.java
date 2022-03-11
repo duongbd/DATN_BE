@@ -183,17 +183,17 @@ public class MonitorController {
     }
 
     @GetMapping("/app/list-app-supported")
-    public ResponseEntity<?> listAppsSupported(){
+    public ResponseEntity<?> listAppsSupported() {
         List<String> appsName = new LinkedList<>();
         appService.findAll().forEach(app -> appsName.add(app.getAppName()));
-        return new ResponseEntity<>(ResponseBody.responseBodySuccess(appsName),HttpStatus.OK);
+        return new ResponseEntity<>(ResponseBody.responseBodySuccess(appsName), HttpStatus.OK);
     }
 
     @GetMapping("/room/search-room-by-form")
-    public ResponseEntity<?> searchRoomBySearchForm(@RequestBody RoomSearchForm searchForm){
+    public ResponseEntity<?> searchRoomBySearchForm(@RequestBody RoomSearchForm searchForm) {
         try {
             searchForm.setMonitorId(monitorInfoBase().getMonitorId());
-            List<Room> roomList= roomService.findBySearchForm(searchForm);
+            List<Room> roomList = roomService.findBySearchForm(searchForm);
             List<DetailsRoom> detailsRooms = new LinkedList<>();
             roomList.forEach(room -> detailsRooms.add(new DetailsRoom(room)));
             return new ResponseEntity<>(ResponseBody.responseBodySuccess(detailsRooms), HttpStatus.OK);
