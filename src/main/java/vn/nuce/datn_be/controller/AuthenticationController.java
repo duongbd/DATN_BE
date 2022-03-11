@@ -16,11 +16,19 @@ import vn.nuce.datn_be.model.dto.CandidateLoginForm;
 import vn.nuce.datn_be.model.dto.LoginSuccessDto;
 import vn.nuce.datn_be.model.dto.MonitorLoginForm;
 import vn.nuce.datn_be.model.dto.ResponseBody;
+import vn.nuce.datn_be.model.enumeration.CandidateStatus;
 import vn.nuce.datn_be.model.enumeration.RoomStatus;
+import vn.nuce.datn_be.repositories.RoomRepository;
 import vn.nuce.datn_be.services.CandidateService;
+import vn.nuce.datn_be.services.GoogleDriveManager;
 import vn.nuce.datn_be.services.RoomService;
 import vn.nuce.datn_be.services.UserService;
+import vn.nuce.datn_be.utils.ExcelUtils;
 import vn.nuce.datn_be.utils.JwtUtils;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RestController
@@ -84,6 +92,7 @@ public class AuthenticationController {
         CandidateInfo candidateInfo = new CandidateInfo();
         candidateInfo.setCandidateName(monitorLoginForm.getEmail());
         candidateInfo.setPassword(monitorLoginForm.getPassword());
+        candidateInfo.setCandidateStatus(CandidateStatus.ONLINE);
         candidateService.save(candidateInfo);
         return new ResponseEntity<String>(candidateInfo.toString(), HttpStatus.OK);
     }
@@ -92,5 +101,24 @@ public class AuthenticationController {
     public ResponseEntity<?> logoutMonitor() {
         SecurityContextHolder.clearContext();
         return new ResponseEntity<String>(HttpStatus.OK);
+    }
+
+    @Autowired
+    RoomRepository roomRepository;
+
+    @Autowired
+    GoogleDriveManager googleDriveManager;
+
+    @GetMapping(value = "/gg")
+    public ResponseEntity<?> auto(){
+        List<Room> idList= roomRepository.findAll();
+        for (Room room : idList) {
+            try {
+                googleDriveManager.findOrCreateFolder("12d5PSJxlpdmDI93q3lva50nmryJmgar2", room.getId().toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
