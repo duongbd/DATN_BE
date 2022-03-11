@@ -114,8 +114,6 @@ public class RoomService {
     public List<Room> findBySearchForm(RoomSearchForm searchForm) throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        Date startTime = DatnUtils.setTimeStartInDay(dateFormat.parse(searchForm.getStartDate()));
-
 //        Room room = new Room();
 //        room.setName(searchForm.getKeyName());
 //        room.setRoomStatus(searchForm.getRoomStatus());

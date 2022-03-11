@@ -27,6 +27,7 @@ import vn.nuce.datn_be.utils.DatnUtils;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Date;
+import java.util.Objects;
 
 @Log4j2
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
@@ -66,13 +67,12 @@ public class CandidateController {
 
     @PostMapping("/update-info")
     public ResponseEntity<?> postUpdateMonitoringCandidate(@Valid @ModelAttribute MonitoringInfo monitoringInfo) {
-        log.info("update");
         CandidateInfo candidateInfo = candidateService.findById(candidateInfoBase().getCandidateId());
         //update to log table
         LogTime logTime = new LogTime();
         logTime.setTimeCreate(new Date());
         logTime.setRoomFk(candidateInfo.getRoomFk());
-        switch (monitoringInfo.getMonitoringStatus()) {
+        switch (Objects.requireNonNull(MonitoringStatus.getMonitoringStatusByName(monitoringInfo.getMonitoringStatus()))) {
             case NORMAL:
                 logTime.setContent("CandidateId: " + candidateInfo.getId() + " - " + "numberId: " + candidateInfo.getNumberId() + " still normal");
                 break;
@@ -88,7 +88,7 @@ public class CandidateController {
         Runnable uploadScreenShotToDrive = () -> {
             try {
                 candidateInfo.setNewestScreenShotId(driveManager.uploadFile(monitoringInfo.getFile(), "DATN/" + candidateInfo.getRoomFk() + "/" + candidateInfo.getId()));
-                candidateInfo.setLastSaw(DatnUtils.cvtToGmt(new Date(),7));
+                candidateInfo.setLastSaw(DatnUtils.cvtToGmt(new Date(), 7));
                 candidateService.save(candidateInfo);
             } catch (Exception e) {
                 e.printStackTrace();
