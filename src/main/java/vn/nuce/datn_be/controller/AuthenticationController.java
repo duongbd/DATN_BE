@@ -1,13 +1,16 @@
 package vn.nuce.datn_be.controller;
 
+import com.google.api.services.drive.model.File;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import vn.nuce.datn_be.enity.CandidateInfo;
 import vn.nuce.datn_be.enity.Room;
@@ -28,6 +31,7 @@ import vn.nuce.datn_be.utils.JwtUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
@@ -45,6 +49,9 @@ public class AuthenticationController {
     JwtUtils jwtUtils;
     @Autowired
     RoomService roomService;
+
+    @Value("${datn.google.rootFolder.id}")
+    private String ROOT_FOLDER_ID;
 
     private String authenticate(String username, String password) throws Exception {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
@@ -114,11 +121,36 @@ public class AuthenticationController {
         List<Room> idList= roomRepository.findAll();
         for (Room room : idList) {
             try {
-                googleDriveManager.findOrCreateFolder("12d5PSJxlpdmDI93q3lva50nmryJmgar2", room.getId().toString());
+                log.info(googleDriveManager.findOrCreateFolder(ROOT_FOLDER_ID, room.getId().toString()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+//        List<File> files = null;
+//        try {
+//            files = googleDriveManager.googleDriveService().files().list().execute().getFiles();
+//            files.forEach(file -> {
+//                Runnable runnable = () -> {
+//                    try {
+//                        if (!file.getName().equals("DATN"))
+//                            googleDriveManager.deleteFile(file.getId());
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                };
+//                runnable.run();
+//            });
+//        } catch (IOException | GeneralSecurityException e) {
+//            e.printStackTrace();
+//        }
+//        if (files == null || files.isEmpty()) {
+//            System.out.println("No files found.");
+//        } else {
+//            System.out.println("Files:");
+//            for (File file : files) {
+//                System.out.printf("%s (%s)\n", file.getName(), file.getId());
+//            }
+//        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

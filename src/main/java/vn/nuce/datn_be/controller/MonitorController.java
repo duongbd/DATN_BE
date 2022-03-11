@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import vn.nuce.datn_be.enity.*;
 import vn.nuce.datn_be.model.dto.*;
@@ -49,6 +50,9 @@ public class MonitorController {
     GoogleDriveManager driveManager;
 
     private static final String REGEX_EMAIL = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\\\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\\\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
+
+    @Value("${datn.google.rootFolder.id}")
+    private String ROOT_FOLDER_ID;
 
     private UserDetailsImpl monitorInfoBase() {
         return (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -117,16 +121,24 @@ public class MonitorController {
             }
             Room room = roomService.saveByRoomForm(roomForm, monitorInfoBase().getMonitorId());
 
-            if (room != null && rowDataList != null) {
-                for (int i = 1; i < rowDataList.size(); i++) {
-                    CandidateInfo info = new CandidateInfo();
-                    info.setInfo(rowDataList.get(i).get(2));
-                    info.setNumberId(Long.valueOf(rowDataList.get(i).get(3)));
-                    info.setCandidateName(rowDataList.get(i).get(0));
-                    info.setRoomFk(room.getId());
-                    info.setEmail(rowDataList.get(i).get(1));
-                    info.setPassword(DatnUtils.randomPassword(7));
-                    candidateService.save(info);
+            if (room != null) {
+                try {
+                    driveManager.findOrCreateFolder(ROOT_FOLDER_ID, room.getId().toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                if (rowDataList != null) {
+                    for (int i = 1; i < rowDataList.size(); i++) {
+                        CandidateInfo info = new CandidateInfo();
+                        info.setInfo(rowDataList.get(i).get(2));
+                        info.setNumberId(Long.valueOf(rowDataList.get(i).get(3)));
+                        info.setCandidateName(rowDataList.get(i).get(0));
+                        info.setRoomFk(room.getId());
+                        info.setEmail(rowDataList.get(i).get(1));
+                        info.setPassword(DatnUtils.randomPassword(7));
+                        candidateService.save(info);
+                    }
                 }
             }
 

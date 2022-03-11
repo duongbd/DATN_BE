@@ -22,7 +22,9 @@ import vn.nuce.datn_be.services.CandidateService;
 import vn.nuce.datn_be.services.GoogleDriveManager;
 import vn.nuce.datn_be.services.LogTimeService;
 import vn.nuce.datn_be.services.RoomService;
+import vn.nuce.datn_be.utils.DatnUtils;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Date;
 
@@ -63,7 +65,7 @@ public class CandidateController {
     }
 
     @PostMapping("/update-info")
-    public ResponseEntity<?> postUpdateMonitoringCandidate(@ModelAttribute MonitoringInfo monitoringInfo) {
+    public ResponseEntity<?> postUpdateMonitoringCandidate(@Valid @ModelAttribute MonitoringInfo monitoringInfo) {
         log.info("update");
         CandidateInfo candidateInfo = candidateService.findById(candidateInfoBase().getCandidateId());
         //update to log table
@@ -86,6 +88,7 @@ public class CandidateController {
         Runnable uploadScreenShotToDrive = () -> {
             try {
                 candidateInfo.setNewestScreenShotId(driveManager.uploadFile(monitoringInfo.getFile(), "DATN/" + candidateInfo.getRoomFk() + "/" + candidateInfo.getId()));
+                candidateInfo.setLastSaw(DatnUtils.cvtToGmt(new Date(),7));
                 candidateService.save(candidateInfo);
             } catch (Exception e) {
                 e.printStackTrace();
