@@ -47,9 +47,9 @@ public class ResourcesController {
         return null;
     }
 
-//    @GetMapping(value = "/send-mail")
-//    public ResponseEntity<?> sendMail(){
-//        scheduledTasks.autoSendMailToCandidate();
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
+    @GetMapping(value = "/send-mail")
+    public ResponseEntity<?> sendMail(){
+        scheduledTasks.autoSendMailToCandidate();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

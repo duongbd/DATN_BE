@@ -4,14 +4,17 @@ package vn.nuce.datn_be.services;
 import lombok.extern.log4j.Log4j2;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import vn.nuce.datn_be.enity.CandidateInfo;
 import vn.nuce.datn_be.enity.LogTime;
 import vn.nuce.datn_be.enity.Room;
+import vn.nuce.datn_be.model.enumeration.CandidateStatus;
 import vn.nuce.datn_be.model.enumeration.RoomStatus;
 import vn.nuce.datn_be.model.enumeration.SendMailStatus;
+import vn.nuce.datn_be.model.form.NotifyCandidateStatus;
 import vn.nuce.datn_be.utils.DatnUtils;
 
 import javax.mail.MessagingException;
@@ -33,6 +36,9 @@ public class ScheduledTasks {
 
     @Autowired
     private CandidateService candidateService;
+
+    @Autowired
+    private SimpMessagingTemplate template;
 
     @Scheduled(fixedRate = 60000)
     public void startRoomWhenTimeOn() throws InterruptedException {
@@ -92,6 +98,27 @@ public class ScheduledTasks {
         log.info("After sleep: " + new Date());
     }
 
+    @Scheduled(fixedRate = 60000)
+    public void checkCandidateDisconnected() {
+        List<Room> roomList = roomService.getListRoomActive();
+        roomList.forEach(room -> {
+            Set<CandidateInfo> candidateInfos = room.getCandidateInfos();
+            candidateInfos.forEach(candidateInfo -> {
+                if (candidateInfo.getLastSaw() != null) {
+                    Calendar lastSawAfter6M = Calendar.getInstance();
+                    lastSawAfter6M.setTime(candidateInfo.getLastSaw());
+                    lastSawAfter6M.add(Calendar.MINUTE, 6);
+                    if (DatnUtils.cvtToGmt(new Date(), 7).after(lastSawAfter6M.getTime())){
+                        candidateInfo.setCandidateStatus(CandidateStatus.DISCONNECTED);
+                        candidateService.save(candidateInfo);
+                        this.template.convertAndSend("/chat/notify-status/" + candidateInfo.getRoomFk(), NotifyCandidateStatus.notifyCandidateStatusDisconnected(candidateInfo));
+                    }
+                }
+            });
+        });
+
+    }
+
     @Scheduled(cron = "0 0 0 ? * *", zone = "Asia/Ho_Chi_Minh")
     public void autoSendMailToCandidate() {
         List<Room> roomList = roomService.getListRoomNeedSendMailToCandidate();
@@ -105,10 +132,12 @@ public class ScheduledTasks {
                     try {
                         emailService.sendMessageUsingThymeleafTemplate(candidateInfo.getEmail(), "INFO LOGIN ROOM " + candidateInfo.getRoom().getName().toUpperCase(), map);
                         candidateInfo.setSendMailStatus(SendMailStatus.SEND);
+                        log.info("Send mail success to candidate id: " + candidateInfo.getId());
                     } catch (MessagingException e) {
 //                        e.printStackTrace();
                         log.error(e.getMessage());
                         candidateInfo.setSendMailStatus(SendMailStatus.FAIL);
+                        log.info("Send mail fail to candidate id: " + candidateInfo.getId());
                     }
                     candidateService.save(candidateInfo);
                 };

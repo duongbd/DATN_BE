@@ -14,11 +14,13 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     List<Room> findByOwnerFk(Long userId);
 
-    List<Room> findAllByStartTimeLessThanEqualAndRoomStatusAndEndTimeGreaterThan(Date startTime, RoomStatus roomStatus, Date endTime);
+    List<Room> findAllByStartTimeLessThanEqualAndRoomStatusAndEndTimeGreaterThanEqual(Date startTime, RoomStatus roomStatus, Date endTime);
 
     List<Room> findAllByEndTimeLessThanEqualAndRoomStatus(Date endTime, RoomStatus roomStatus);
 
     List<Room> findAllDistinctByIdOrNameStartingWithAndOwnerFk(Long id, String name, Long ownerFk);
 
-    List<Room> findAllByStartTimeBetween(Date startDate, Date endDate);
+    List<Room> findAllByStartTimeGreaterThanEqualAndStartTimeLessThanEqual(Date startDate, Date endDate);
+
+    List<Room> findAllByRoomStatus(RoomStatus roomStatus);
 }

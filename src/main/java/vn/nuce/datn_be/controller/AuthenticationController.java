@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,17 +22,20 @@ import vn.nuce.datn_be.model.dto.MonitorLoginForm;
 import vn.nuce.datn_be.model.dto.ResponseBody;
 import vn.nuce.datn_be.model.enumeration.CandidateStatus;
 import vn.nuce.datn_be.model.enumeration.RoomStatus;
+import vn.nuce.datn_be.model.form.NotifyCandidateStatus;
 import vn.nuce.datn_be.repositories.RoomRepository;
 import vn.nuce.datn_be.services.CandidateService;
 import vn.nuce.datn_be.services.GoogleDriveManager;
 import vn.nuce.datn_be.services.RoomService;
 import vn.nuce.datn_be.services.UserService;
+import vn.nuce.datn_be.utils.DatnUtils;
 import vn.nuce.datn_be.utils.ExcelUtils;
 import vn.nuce.datn_be.utils.JwtUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
@@ -49,6 +53,8 @@ public class AuthenticationController {
     JwtUtils jwtUtils;
     @Autowired
     RoomService roomService;
+    @Autowired
+    private SimpMessagingTemplate template;
 
     @Value("${datn.google.rootFolder.id}")
     private String ROOT_FOLDER_ID;
@@ -76,6 +82,14 @@ public class AuthenticationController {
             String token = authenticate(candidateLoginForm.getUsername(), candidateLoginForm.getPassword());
             Room room = candidateService.findById(candidateLoginForm.getUsername()).getRoom();
             if (room.getRoomStatus().equals(RoomStatus.ACTIVE)) {
+                CandidateInfo candidateInfo = candidateService.findById(candidateLoginForm.getUsername());
+                if (candidateInfo.getCandidateStatus().equals(CandidateStatus.BLOCK)){
+                    return new ResponseEntity<>(ResponseBody.responseBodyFail("BLOCKED"), HttpStatus.OK);
+                }
+                candidateInfo.setCandidateStatus(CandidateStatus.ONLINE);
+                candidateInfo.setLastSaw(DatnUtils.cvtToGmt(new Date(), 7));
+                candidateService.save(candidateInfo);
+                this.template.convertAndSend("/chat/notify-status/" + candidateInfo.getRoomFk(), NotifyCandidateStatus.notifyCandidateStatusOnline(candidateInfo));
                 return new ResponseEntity<>(ResponseBody.responseBodySuccess(new LoginSuccessDto(token)), HttpStatus.OK);
             }
             return new ResponseEntity<>(ResponseBody.responseBodyFail("Room is not opened"), HttpStatus.OK);

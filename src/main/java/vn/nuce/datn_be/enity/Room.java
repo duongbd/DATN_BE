@@ -51,7 +51,7 @@ public class Room extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RoomStatus roomStatus;
 
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "room", fetch = FetchType.EAGER)
     Set<CandidateInfo> candidateInfos;
 
     @OneToMany(mappedBy = "room")

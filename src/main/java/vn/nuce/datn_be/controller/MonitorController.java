@@ -201,7 +201,7 @@ public class MonitorController {
         return new ResponseEntity<>(ResponseBody.responseBodySuccess(appsName), HttpStatus.OK);
     }
 
-    @GetMapping("/room/search-room-by-form")
+    @PostMapping("/room/search-room-by-form")
     public ResponseEntity<?> searchRoomBySearchForm(@RequestBody RoomSearchForm searchForm) {
         try {
             searchForm.setMonitorId(monitorInfoBase().getMonitorId());

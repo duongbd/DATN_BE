@@ -1,10 +1,6 @@
 package vn.nuce.datn_be.services;
 
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.nuce.datn_be.enity.App;
@@ -95,7 +91,7 @@ public class RoomService {
     }
 
     public List<Room> getAllRoomTimeOn(Date date) {
-        return roomRepository.findAllByStartTimeLessThanEqualAndRoomStatusAndEndTimeGreaterThan(date, RoomStatus.INACTIVE, date);
+        return roomRepository.findAllByStartTimeLessThanEqualAndRoomStatusAndEndTimeGreaterThanEqual(date, RoomStatus.INACTIVE, date);
     }
 
     public List<Room> getAllRoomTimeUp(Date date) {
@@ -164,6 +160,10 @@ public class RoomService {
         calendar1.add(Calendar.DATE, 1);
         endDate = calendar1.getTime();
 
-        return roomRepository.findAllByStartTimeBetween(startDate, endDate);
+        return roomRepository.findAllByStartTimeGreaterThanEqualAndStartTimeLessThanEqual(startDate, endDate);
+    }
+
+    public List<Room> getListRoomActive(){
+        return roomRepository.findAllByRoomStatus(RoomStatus.ACTIVE);
     }
 }

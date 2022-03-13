@@ -13,6 +13,7 @@ import vn.nuce.datn_be.enity.LogTime;
 import vn.nuce.datn_be.enity.Room;
 import vn.nuce.datn_be.model.dto.DetailsRoom;
 import vn.nuce.datn_be.model.dto.ResponseBody;
+import vn.nuce.datn_be.model.enumeration.CandidateStatus;
 import vn.nuce.datn_be.model.enumeration.MonitoringStatus;
 import vn.nuce.datn_be.model.form.MonitoringInfo;
 import vn.nuce.datn_be.model.form.NotifyCandidateStatus;
@@ -72,6 +73,11 @@ public class CandidateController {
         LogTime logTime = new LogTime();
         logTime.setTimeCreate(new Date());
         logTime.setRoomFk(candidateInfo.getRoomFk());
+        candidateInfo.setLastSaw(DatnUtils.cvtToGmt(new Date(), 7));
+        if (candidateInfo.getCandidateStatus().equals(CandidateStatus.DISCONNECTED) || candidateInfo.getCandidateStatus().equals(CandidateStatus.OFFLINE)){
+            candidateInfo.setCandidateStatus(CandidateStatus.ONLINE);
+        }
+        candidateService.save(candidateInfo);
         switch (Objects.requireNonNull(MonitoringStatus.getMonitoringStatusByName(monitoringInfo.getMonitoringStatus()))) {
             case NORMAL:
                 logTime.setContent("CandidateId: " + candidateInfo.getId() + " - " + "numberId: " + candidateInfo.getNumberId() + " still normal");
@@ -88,7 +94,6 @@ public class CandidateController {
         Runnable uploadScreenShotToDrive = () -> {
             try {
                 candidateInfo.setNewestScreenShotId(driveManager.uploadFile(monitoringInfo.getFile(), "DATN/" + candidateInfo.getRoomFk() + "/" + candidateInfo.getId()));
-                candidateInfo.setLastSaw(DatnUtils.cvtToGmt(new Date(), 7));
                 candidateService.save(candidateInfo);
             } catch (Exception e) {
                 e.printStackTrace();
