@@ -140,6 +140,9 @@ public class RoomService {
             predicates.add(startDate);
         }
         Predicate userFk = builder.equal(root.get("ownerFk"), searchForm.getMonitorId());
+//        Create alias
+//        Predicate userStatus = builder.equal(root.get("owner").get("password"), "1234");
+//        predicates.add(userStatus);
         predicates.add(userFk);
         query.where(predicates.toArray(new Predicate[0]));
         return entityManager.createQuery(query.select(root)).getResultList();

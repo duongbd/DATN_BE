@@ -66,6 +66,12 @@ public class CandidateController {
         return new ResponseEntity<>(ResponseBody.responseBodyFail("Candidate not found"), HttpStatus.OK);
     }
 
+    @GetMapping("/details=info")
+    public ResponseEntity<?> getDetailsInfo() {
+        CandidateInfo candidateInfo = candidateService.findById(candidateInfoBase().getCandidateId());
+        return new ResponseEntity<>(ResponseBody.responseBodySuccess(candidateInfo), HttpStatus.OK);
+    }
+
     @PostMapping("/update-info")
     public ResponseEntity<?> postUpdateMonitoringCandidate(@Valid @ModelAttribute MonitoringInfo monitoringInfo) {
         CandidateInfo candidateInfo = candidateService.findById(candidateInfoBase().getCandidateId());
@@ -74,7 +80,7 @@ public class CandidateController {
         logTime.setTimeCreate(new Date());
         logTime.setRoomFk(candidateInfo.getRoomFk());
         candidateInfo.setLastSaw(DatnUtils.cvtToGmt(new Date(), 7));
-        if (candidateInfo.getCandidateStatus().equals(CandidateStatus.DISCONNECTED) || candidateInfo.getCandidateStatus().equals(CandidateStatus.OFFLINE)){
+        if (candidateInfo.getCandidateStatus().equals(CandidateStatus.DISCONNECTED) || candidateInfo.getCandidateStatus().equals(CandidateStatus.OFFLINE)) {
             candidateInfo.setCandidateStatus(CandidateStatus.ONLINE);
         }
         candidateService.save(candidateInfo);

@@ -15,6 +15,7 @@ import vn.nuce.datn_be.model.enumeration.CandidateStatus;
 import vn.nuce.datn_be.model.enumeration.RoomStatus;
 import vn.nuce.datn_be.model.enumeration.SendMailStatus;
 import vn.nuce.datn_be.model.form.NotifyCandidateStatus;
+import vn.nuce.datn_be.model.form.NotifyRoomStatus;
 import vn.nuce.datn_be.utils.DatnUtils;
 
 import javax.mail.MessagingException;
@@ -58,6 +59,7 @@ public class ScheduledTasks {
             if (room.getStartTime().before(DatnUtils.cvtToGmt(new Date(), 7)) && room.getEndTime().after(DatnUtils.cvtToGmt(new Date(), 7))) {
                 room.setRoomStatus(RoomStatus.ACTIVE);
                 roomService.save(room);
+                this.template.convertAndSend("/chat/notify-status/room" + room.getId(), NotifyRoomStatus.notifyRoomStatus(room));
                 LogTime logTime = new LogTime();
                 logTime.setRoomFk(room.getId());
                 logTime.setTimeCreate(DatnUtils.cvtToGmt(new Date(), 7));
@@ -87,6 +89,7 @@ public class ScheduledTasks {
             if (room.getStartTime().before(DatnUtils.cvtToGmt(new Date(), 7)) && room.getEndTime().before(DatnUtils.cvtToGmt(new Date(), 7))) {
                 room.setRoomStatus(RoomStatus.ENDED);
                 roomService.save(room);
+                this.template.convertAndSend("/chat/notify-status/room" + room.getId(), NotifyRoomStatus.notifyRoomStatus(room));
                 LogTime logTime = new LogTime();
                 logTime.setRoomFk(room.getId());
                 logTime.setTimeCreate(DatnUtils.cvtToGmt(new Date(), 7));
@@ -111,7 +114,7 @@ public class ScheduledTasks {
                     if (DatnUtils.cvtToGmt(new Date(), 7).after(lastSawAfter6M.getTime())){
                         candidateInfo.setCandidateStatus(CandidateStatus.DISCONNECTED);
                         candidateService.save(candidateInfo);
-                        this.template.convertAndSend("/chat/notify-status/" + candidateInfo.getRoomFk(), NotifyCandidateStatus.notifyCandidateStatusDisconnected(candidateInfo));
+                        this.template.convertAndSend("/chat/notify-status/candidate" + candidateInfo.getRoomFk(), NotifyCandidateStatus.notifyCandidateStatusDisconnected(candidateInfo));
                     }
                 }
             });
