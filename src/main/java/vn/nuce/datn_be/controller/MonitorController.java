@@ -6,6 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ReactiveHttpOutputMessage;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +29,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Predicate;
 
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RestController
@@ -222,10 +224,10 @@ public class MonitorController {
     }
 
     @PostMapping("/block-candidate")
-    public ResponseEntity<?> blockCandidate(@RequestParam(name = "candidateId") String candidateId){
+    public ResponseEntity<?> blockCandidate(@RequestParam(name = "candidateId") String candidateId) {
         CandidateInfo candidateInfo = candidateService.findById(candidateId);
-        if (candidateInfo!=null){
-            if (candidateInfo.getRoom().getOwnerFk().equals(monitorInfoBase().getMonitorId())){
+        if (candidateInfo != null) {
+            if (candidateInfo.getRoom().getOwnerFk().equals(monitorInfoBase().getMonitorId())) {
                 candidateInfo.setCandidateStatus(CandidateStatus.BLOCK);
                 candidateService.save(candidateInfo);
                 this.template.convertAndSend("/notify/notify-block/" + candidateInfo.getId(), NotifyCandidateStatus.notifyCandidateStatusDisconnected(candidateInfo));
@@ -234,5 +236,19 @@ public class MonitorController {
             return new ResponseEntity<>(ResponseBody.responseBodyFail("You not have permission with this candidate"), HttpStatus.OK);
         }
         return new ResponseEntity<>(ResponseBody.responseBodyFail("Candidate not found"), HttpStatus.OK);
+    }
+
+    @GetMapping("/room/{roomId}/details-candidate")
+    public ResponseEntity<?> getDetailsCandidate(@PathVariable(name = "roomId") Long roomId, @RequestParam(name = "candidateId") String candidateId) {
+        Room room = roomService.findById(roomId);
+        if (room != null) {
+            for (CandidateInfo candidateInfo : room.getCandidateInfos()) {
+                if (candidateInfo.getId().equals(candidateId)) {
+                    return new ResponseEntity<>(ResponseBody.responseBodySuccess(candidateInfo), HttpStatus.OK);
+                }
+            }
+            return new ResponseEntity<>(ResponseBody.responseBodyFail("candidate not found"), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(ResponseBody.responseBodyFail("room not found"), HttpStatus.OK);
     }
 }
