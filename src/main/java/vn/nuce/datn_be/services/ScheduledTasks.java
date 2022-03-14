@@ -59,7 +59,7 @@ public class ScheduledTasks {
             if (room.getStartTime().before(DatnUtils.cvtToGmt(new Date(), 7)) && room.getEndTime().after(DatnUtils.cvtToGmt(new Date(), 7))) {
                 room.setRoomStatus(RoomStatus.ACTIVE);
                 roomService.save(room);
-                this.template.convertAndSend("/chat/notify-status/room" + room.getId(), NotifyRoomStatus.notifyRoomStatus(room));
+                this.template.convertAndSend("/chat/notify-status/room/" + room.getId(), NotifyRoomStatus.notifyRoomStatus(room));
                 LogTime logTime = new LogTime();
                 logTime.setRoomFk(room.getId());
                 logTime.setTimeCreate(DatnUtils.cvtToGmt(new Date(), 7));
@@ -89,7 +89,7 @@ public class ScheduledTasks {
             if (room.getStartTime().before(DatnUtils.cvtToGmt(new Date(), 7)) && room.getEndTime().before(DatnUtils.cvtToGmt(new Date(), 7))) {
                 room.setRoomStatus(RoomStatus.ENDED);
                 roomService.save(room);
-                this.template.convertAndSend("/chat/notify-status/room" + room.getId(), NotifyRoomStatus.notifyRoomStatus(room));
+                this.template.convertAndSend("/chat/notify-status/room/" + room.getId(), NotifyRoomStatus.notifyRoomStatus(room));
                 LogTime logTime = new LogTime();
                 logTime.setRoomFk(room.getId());
                 logTime.setTimeCreate(DatnUtils.cvtToGmt(new Date(), 7));
@@ -114,7 +114,7 @@ public class ScheduledTasks {
                     if (DatnUtils.cvtToGmt(new Date(), 7).after(lastSawAfter6M.getTime())){
                         candidateInfo.setCandidateStatus(CandidateStatus.DISCONNECTED);
                         candidateService.save(candidateInfo);
-                        this.template.convertAndSend("/chat/notify-status/candidate" + candidateInfo.getRoomFk(), NotifyCandidateStatus.notifyCandidateStatusDisconnected(candidateInfo));
+                        this.template.convertAndSend("/chat/notify-status/candidate/" + candidateInfo.getRoomFk(), NotifyCandidateStatus.notifyCandidateStatusDisconnected(candidateInfo));
                     }
                 }
             });

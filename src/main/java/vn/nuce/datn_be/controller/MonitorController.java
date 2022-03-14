@@ -228,7 +228,7 @@ public class MonitorController {
             if (candidateInfo.getRoom().getOwnerFk().equals(monitorInfoBase().getMonitorId())){
                 candidateInfo.setCandidateStatus(CandidateStatus.BLOCK);
                 candidateService.save(candidateInfo);
-                this.template.convertAndSend("/notify/notify-block" + candidateInfo.getId(), NotifyCandidateStatus.notifyCandidateStatusDisconnected(candidateInfo));
+                this.template.convertAndSend("/notify/notify-block/" + candidateInfo.getId(), NotifyCandidateStatus.notifyCandidateStatusDisconnected(candidateInfo));
                 return new ResponseEntity<>(ResponseBody.responseBodySuccess(null), HttpStatus.OK);
             }
             return new ResponseEntity<>(ResponseBody.responseBodyFail("You not have permission with this candidate"), HttpStatus.OK);
