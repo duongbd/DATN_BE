@@ -66,7 +66,7 @@ public class CandidateController {
         return new ResponseEntity<>(ResponseBody.responseBodyFail("Candidate not found"), HttpStatus.OK);
     }
 
-    @GetMapping("/details=info")
+    @GetMapping("/details-info")
     public ResponseEntity<?> getDetailsInfo() {
         CandidateInfo candidateInfo = candidateService.findById(candidateInfoBase().getCandidateId());
         return new ResponseEntity<>(ResponseBody.responseBodySuccess(candidateInfo), HttpStatus.OK);
