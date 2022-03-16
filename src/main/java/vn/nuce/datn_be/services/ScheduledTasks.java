@@ -111,7 +111,7 @@ public class ScheduledTasks {
                     Calendar lastSawAfter6M = Calendar.getInstance();
                     lastSawAfter6M.setTime(candidateInfo.getLastSaw());
                     lastSawAfter6M.add(Calendar.MINUTE, 6);
-                    if (DatnUtils.cvtToGmt(new Date(), 7).after(lastSawAfter6M.getTime())){
+                    if (DatnUtils.cvtToGmt(new Date(), 7).after(lastSawAfter6M.getTime()) && candidateInfo.getCandidateStatus().equals(CandidateStatus.ONLINE)){
                         candidateInfo.setCandidateStatus(CandidateStatus.DISCONNECTED);
                         candidateService.save(candidateInfo);
                         this.template.convertAndSend("/chat/notify-status/candidate/" + candidateInfo.getRoomFk(), NotifyCandidateStatus.notifyCandidateStatusDisconnected(candidateInfo));

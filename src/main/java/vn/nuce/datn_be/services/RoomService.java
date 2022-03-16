@@ -9,9 +9,7 @@ import vn.nuce.datn_be.enity.RoomAppKey;
 import vn.nuce.datn_be.model.dto.RoomForm;
 import vn.nuce.datn_be.model.enumeration.RoomStatus;
 import vn.nuce.datn_be.model.form.RoomSearchForm;
-import vn.nuce.datn_be.repositories.AppRepository;
-import vn.nuce.datn_be.repositories.RoomAppKeyRepository;
-import vn.nuce.datn_be.repositories.RoomRepository;
+import vn.nuce.datn_be.repositories.*;
 import vn.nuce.datn_be.utils.DatnUtils;
 
 import javax.persistence.EntityManager;
@@ -36,6 +34,15 @@ public class RoomService {
 
     @Autowired
     RoomAppKeyRepository roomAppKeyRepository;
+
+    @Autowired
+    LogTimeRepository logTimeRepository;
+
+    @Autowired
+    MessageRepository messageRepository;
+
+    @Autowired
+    CandidateRepository candidateRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -168,5 +175,21 @@ public class RoomService {
 
     public List<Room> getListRoomActive(){
         return roomRepository.findAllByRoomStatus(RoomStatus.ACTIVE);
+    }
+
+    public void deleteRoomById(Long roomId){
+        roomRepository.deleteById(roomId);
+    }
+
+    public boolean processDeleteRoom(Long roomId){
+        //delete log
+        
+        //delete message
+
+        //delete roomAppKey
+
+        //delete candidateInfo
+
+        return  false;
     }
 }

@@ -3,6 +3,7 @@ package vn.nuce.datn_be.enity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 import vn.nuce.datn_be.model.enumeration.CandidateStatus;

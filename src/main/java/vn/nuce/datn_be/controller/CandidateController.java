@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import vn.nuce.datn_be.enity.CandidateInfo;
 import vn.nuce.datn_be.enity.LogTime;
 import vn.nuce.datn_be.enity.Room;
+import vn.nuce.datn_be.enity.User;
 import vn.nuce.datn_be.model.dto.DetailsRoom;
 import vn.nuce.datn_be.model.dto.ResponseBody;
 import vn.nuce.datn_be.model.enumeration.CandidateStatus;
 import vn.nuce.datn_be.model.enumeration.MonitoringStatus;
 import vn.nuce.datn_be.model.form.MonitoringInfo;
+import vn.nuce.datn_be.model.form.NotificationMonitor;
 import vn.nuce.datn_be.model.form.NotifyCandidateStatus;
 import vn.nuce.datn_be.repositories.LogTimeRepository;
 import vn.nuce.datn_be.security.UserDetailsImpl;
@@ -28,6 +30,8 @@ import vn.nuce.datn_be.utils.DatnUtils;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @Log4j2
@@ -92,7 +96,7 @@ public class CandidateController {
             case ALERT:
                 logTime.setContent("CandidateId: " + candidateInfo.getId() + " - " + "numberId: " + candidateInfo.getNumberId() + " has " + monitoringInfo.getMonitoringStatus() + ": " + monitoringInfo.getViolationError() + " with proof - " + monitoringInfo.getViolationInfo());
                 Runnable runnableAlert = () -> {
-                    template.convertAndSend("/notify/monitor/" + candidateInfo.getRoomFk(), monitoringInfo);
+                    this.template.convertAndSend("/notify/monitor/" + candidateInfo.getRoomFk(), new NotificationMonitor(monitoringInfo));
                 };
                 runnableAlert.run();
                 break;

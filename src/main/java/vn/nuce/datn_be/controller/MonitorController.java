@@ -251,4 +251,15 @@ public class MonitorController {
         }
         return new ResponseEntity<>(ResponseBody.responseBodyFail("room not found"), HttpStatus.OK);
     }
+
+    @PostMapping("/room/delete")
+    public ResponseEntity<?> deleteRoom(@RequestParam(name = "rooomId") Long roomId){
+        Room room = roomService.findById(roomId);
+        if (room!=null && room.getOwnerFk().equals(monitorInfoBase().getMonitorId())){
+//            roomService.
+            roomService.deleteRoomById(roomId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(ResponseBody.responseBodyFail("room not found"), HttpStatus.OK);
+    }
 }
