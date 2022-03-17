@@ -5,6 +5,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.Locale;
+import java.util.Objects;
 
 public class MultipartFileConstrainValidator implements ConstraintValidator<vn.nuce.datn_be.component.validation.anotation.MultipartFile, MultipartFile> {
 
@@ -12,6 +14,9 @@ public class MultipartFileConstrainValidator implements ConstraintValidator<vn.n
         if (file == null) {
             return false;
         }
-        return !file.isEmpty();
+        if (!Objects.requireNonNull(file.getOriginalFilename()).toLowerCase(Locale.ROOT).contains(".png")) {
+            return !file.isEmpty();
+        }
+        return false;
     }
 }

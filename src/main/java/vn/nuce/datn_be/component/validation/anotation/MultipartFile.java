@@ -16,7 +16,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MultipartFile {
     //error message
-    public String message() default "File size must bigger than zero";
+    public String message() default "File invalid";
 
     //represents group of constraints
     public Class<?>[] groups() default {};
