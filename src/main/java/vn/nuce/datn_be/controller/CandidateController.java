@@ -2,7 +2,6 @@ package vn.nuce.datn_be.controller;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -11,15 +10,12 @@ import org.springframework.web.bind.annotation.*;
 import vn.nuce.datn_be.enity.CandidateInfo;
 import vn.nuce.datn_be.enity.LogTime;
 import vn.nuce.datn_be.enity.Room;
-import vn.nuce.datn_be.enity.User;
 import vn.nuce.datn_be.model.dto.DetailsRoom;
 import vn.nuce.datn_be.model.dto.ResponseBody;
 import vn.nuce.datn_be.model.enumeration.CandidateStatus;
 import vn.nuce.datn_be.model.enumeration.MonitoringStatus;
 import vn.nuce.datn_be.model.form.MonitoringInfo;
 import vn.nuce.datn_be.model.form.NotificationMonitor;
-import vn.nuce.datn_be.model.form.NotifyCandidateStatus;
-import vn.nuce.datn_be.repositories.LogTimeRepository;
 import vn.nuce.datn_be.security.UserDetailsImpl;
 import vn.nuce.datn_be.services.CandidateService;
 import vn.nuce.datn_be.services.GoogleDriveManager;
@@ -28,10 +24,7 @@ import vn.nuce.datn_be.services.RoomService;
 import vn.nuce.datn_be.utils.DatnUtils;
 
 import javax.validation.Valid;
-import java.security.Principal;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 @Log4j2
@@ -103,7 +96,8 @@ public class CandidateController {
         }
         Runnable uploadScreenShotToDrive = () -> {
             try {
-                candidateInfo.setNewestScreenShotId(driveManager.uploadFile(monitoringInfo.getFile(), "DATN/" + candidateInfo.getRoomFk() + "/" + candidateInfo.getId()));
+                candidateInfo.setNewestScreenShotId(driveManager.uploadFile(monitoringInfo.getScreenShotImg(), "DATN/" + candidateInfo.getRoomFk() + "/" + candidateInfo.getId() + "/screenshot"));
+                candidateInfo.setNewestFaceImgId(driveManager.uploadFile(monitoringInfo.getFaceImg(), "DATN/" + candidateInfo.getRoomFk() + "/" + candidateInfo.getId() + "/face"));
                 candidateService.save(candidateInfo);
             } catch (Exception e) {
                 e.printStackTrace();

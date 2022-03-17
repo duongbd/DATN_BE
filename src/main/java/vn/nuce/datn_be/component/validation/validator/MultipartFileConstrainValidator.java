@@ -14,7 +14,7 @@ public class MultipartFileConstrainValidator implements ConstraintValidator<vn.n
         if (file == null) {
             return false;
         }
-        if (!Objects.requireNonNull(file.getOriginalFilename()).toLowerCase(Locale.ROOT).contains(".png")) {
+        if (Objects.requireNonNull(file.getOriginalFilename()).toLowerCase(Locale.ROOT).contains(".png")) {
             return !file.isEmpty();
         }
         return false;

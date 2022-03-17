@@ -21,5 +21,7 @@ public class MonitoringInfo {
     String monitoringStatus;
     @NotNull
     @vn.nuce.datn_be.component.validation.anotation.MultipartFile
-    MultipartFile file;
+    MultipartFile screenShotImg;
+    @vn.nuce.datn_be.component.validation.anotation.MultipartFile
+    MultipartFile faceImg;
 }

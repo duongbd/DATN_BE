@@ -59,6 +59,9 @@ public class CandidateInfo {
     @Column(name = "NEWEST_SCREENSHOT_ID")
     private String newestScreenShotId;
 
+    @Column(name = "NEWEST_FACE_IMG_ID")
+    private String newestFaceImgId;
+
     @Column(name = "LAST_SAW")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
