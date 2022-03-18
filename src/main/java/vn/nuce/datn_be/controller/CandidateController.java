@@ -76,6 +76,8 @@ public class CandidateController {
         LogTime logTime = new LogTime();
         logTime.setTimeCreate(new Date());
         logTime.setRoomFk(candidateInfo.getRoomFk());
+        monitoringInfo.setCandidateId(candidateInfo.getId());
+        monitoringInfo.setNumberId(candidateInfo.getNumberId());
         candidateInfo.setLastSaw(DatnUtils.cvtToGmt(new Date(), 7));
         if (candidateInfo.getCandidateStatus().equals(CandidateStatus.DISCONNECTED) || candidateInfo.getCandidateStatus().equals(CandidateStatus.OFFLINE)) {
             candidateInfo.setCandidateStatus(CandidateStatus.ONLINE);

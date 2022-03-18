@@ -1,6 +1,6 @@
-package vn.nuce.datn_be.component.validation.anotation;
+package vn.nuce.datn_be.anotation.validation;
 
-import vn.nuce.datn_be.component.validation.validator.MonitoringStatusConstrainValidator;
+import vn.nuce.datn_be.anotation.validation.validator.MultipartFileConstrainValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,12 +10,12 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-@Constraint(validatedBy = MonitoringStatusConstrainValidator.class)
+@Constraint(validatedBy = MultipartFileConstrainValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MonitoringStatus {
+public @interface MultipartFile {
     //error message
-    public String message() default "Status invalid";
+    public String message() default "File invalid";
 
     //represents group of constraints
     public Class<?>[] groups() default {};
