@@ -6,4 +6,5 @@ import vn.nuce.datn_be.enity.Message;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
+    void deleteAllByRoomFk(Long roomId);
 }

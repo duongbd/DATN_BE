@@ -8,4 +8,5 @@ import java.util.List;
 
 @Repository
 public interface RoomAppKeyRepository extends JpaRepository<RoomAppKey, Long> {
+    void deleteAllByRoomFk(Long roomId);
 }

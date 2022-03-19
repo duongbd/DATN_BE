@@ -12,4 +12,6 @@ public interface CandidateRepository extends JpaRepository<CandidateInfo, String
     Optional<CandidateInfo> findByNumberId(Long numberId);
 
     List<CandidateInfo> findAllByRoomFk(Long roomId);
+
+    void deleteAllByRoomFk(Long roomId);
 }

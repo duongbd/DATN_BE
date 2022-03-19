@@ -126,6 +126,10 @@ public class MonitorController {
             if (startTime.after(endTime)) {
                 return new ResponseEntity<>(ResponseBody.responseBodyFail("End time not to be before start time"), HttpStatus.OK);
             }
+            Date minimumStartTime = DatnUtils.setTimeStartInDay(DatnUtils.cvtToGmt(new Date(), 7));
+            if (startTime.before(minimumStartTime)) {
+                return new ResponseEntity<>(ResponseBody.responseBodyFail("Start time at least starting from 00:00:00 on the day after tomorrow"), HttpStatus.OK);
+            }
             Room room = roomService.saveByRoomForm(roomForm, monitorInfoBase().getMonitorId());
 
             if (room != null) {
@@ -253,11 +257,10 @@ public class MonitorController {
     }
 
     @PostMapping("/room/delete")
-    public ResponseEntity<?> deleteRoom(@RequestParam(name = "rooomId") Long roomId){
+    public ResponseEntity<?> deleteRoom(@RequestParam(name = "rooomId") Long roomId) throws Exception {
         Room room = roomService.findById(roomId);
-        if (room!=null && room.getOwnerFk().equals(monitorInfoBase().getMonitorId())){
-//            roomService.
-            roomService.deleteRoomById(roomId);
+        if (room != null && room.getOwnerFk().equals(monitorInfoBase().getMonitorId())) {
+            roomService.processDeleteRoom(roomId);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(ResponseBody.responseBodyFail("room not found"), HttpStatus.OK);

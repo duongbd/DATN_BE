@@ -90,6 +90,7 @@ public class ScheduledTasks {
                 room.setRoomStatus(RoomStatus.ENDED);
                 roomService.save(room);
                 this.template.convertAndSend("/chat/notify-status/room/" + room.getId(), NotifyRoomStatus.notifyRoomStatus(room));
+                this.template.convertAndSend("/chat/notify-status/room/" + room.getOwner().getEmail(), NotifyRoomStatus.notifyRoomStatus(room));
                 LogTime logTime = new LogTime();
                 logTime.setRoomFk(room.getId());
                 logTime.setTimeCreate(DatnUtils.cvtToGmt(new Date(), 7));

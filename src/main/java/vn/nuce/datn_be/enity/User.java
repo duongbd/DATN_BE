@@ -23,6 +23,7 @@ public class User extends BaseEntity {
 
     @Column(name = "EMAIL", unique = true)
     @Email(message = "Email invalid")
+    @NotBlank
     String email;
 
     @Column(name = "PASSWORD")

@@ -180,7 +180,7 @@ public class GoogleDriveManager {
         }
     }
 
-    public void deleteFile(String fileId) throws Exception {
+    public void deleteFile(String fileId) throws GeneralSecurityException, IOException {
         googleDriveService().files().delete(fileId).execute();
     }
 

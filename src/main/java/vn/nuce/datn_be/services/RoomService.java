@@ -1,6 +1,7 @@
 package vn.nuce.datn_be.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.nuce.datn_be.enity.App;
@@ -18,6 +19,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,6 +46,12 @@ public class RoomService {
 
     @Autowired
     CandidateRepository candidateRepository;
+
+    @Autowired
+    GoogleDriveManager driveManager;
+
+    @Value("${datn.google.rootFolder.id}")
+    private String ROOT_FOLDER_ID;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -156,7 +165,8 @@ public class RoomService {
     }
 
     public List<Room> getListRoomNeedSendMailToCandidate() {
-        Date startDate = DatnUtils.cvtToGmt(new Date(), 7);;
+        Date startDate = DatnUtils.cvtToGmt(new Date(), 7);
+        ;
         Date endDate = DatnUtils.cvtToGmt(new Date(), 7);
         DatnUtils.setTimeStartInDay(startDate);
         DatnUtils.setTimeEndInDay(endDate);
@@ -173,23 +183,26 @@ public class RoomService {
         return roomRepository.findAllByStartTimeGreaterThanEqualAndStartTimeLessThanEqual(startDate, endDate);
     }
 
-    public List<Room> getListRoomActive(){
+    public List<Room> getListRoomActive() {
         return roomRepository.findAllByRoomStatus(RoomStatus.ACTIVE);
     }
 
-    public void deleteRoomById(Long roomId){
+    public void deleteRoomById(Long roomId) {
         roomRepository.deleteById(roomId);
     }
 
-    public boolean processDeleteRoom(Long roomId){
+    public void processDeleteRoom(Long roomId) throws Exception {
         //delete log
-        
+        logTimeRepository.deleteAllAllByRoomFk(roomId);
         //delete message
-
+        messageRepository.deleteAllByRoomFk(roomId);
         //delete roomAppKey
-
+        roomAppKeyRepository.deleteAllByRoomFk(roomId);
         //delete candidateInfo
-
-        return  false;
+        candidateRepository.deleteAllByRoomFk(roomId);
+        //delete room
+        roomRepository.deleteById(roomId);
+        // delete img
+        driveManager.deleteFile(driveManager.searchFolderId(ROOT_FOLDER_ID, String.valueOf(roomId)));
     }
 }
