@@ -23,4 +23,6 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     List<Room> findAllByStartTimeGreaterThanEqualAndStartTimeLessThanEqual(Date startDate, Date endDate);
 
     List<Room> findAllByRoomStatus(RoomStatus roomStatus);
+
+    boolean existsByIdAndOwnerFk(Long roomId, Long monitorId);
 }

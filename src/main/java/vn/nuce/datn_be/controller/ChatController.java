@@ -19,6 +19,7 @@ import vn.nuce.datn_be.model.dto.MessageDto;
 import vn.nuce.datn_be.model.dto.ResponseBody;
 import vn.nuce.datn_be.model.form.NotifyCandidateStatus;
 import vn.nuce.datn_be.services.MessageService;
+import vn.nuce.datn_be.utils.DatnUtils;
 
 import java.util.Date;
 
@@ -44,7 +45,7 @@ public class ChatController {
         message.setContent(messageSend.getContent());
         message.setSender(messageSend.getSender());
         message.setReceiver(message.getReceiver());
-        message.setTimeCreate(new Date());
+        message.setTimeCreate(DatnUtils.cvtToGmt(new Date(), 7));
         message.setFromIP(message.getFromIP());
         message.setFromMAC(message.getFromMAC());
         message.setRoomFk(roomId);

@@ -70,4 +70,7 @@ public class CandidateInfo {
     @Enumerated(EnumType.STRING)
     @Column(name = "SEND_MAIL_STATUS")
     private SendMailStatus sendMailStatus = SendMailStatus.UNSENT;
+
+    @Column(name = "IS_BLOCKED")
+    private boolean isBlocked = false;
 }

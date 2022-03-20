@@ -57,7 +57,7 @@ public class CandidateController {
         if (candidateInfo != null) {
             Room room = candidateInfo.getRoom();
             return room != null
-                    ? new ResponseEntity<>(ResponseBody.responseBodySuccess(new DetailsRoom(room)), HttpStatus.OK)
+                    ? new ResponseEntity<>(ResponseBody.responseBodySuccess(new DetailsRoom(room, true)), HttpStatus.OK)
                     : new ResponseEntity<>(ResponseBody.responseBodyFail("RoomId not found"), HttpStatus.OK);
         }
         return new ResponseEntity<>(ResponseBody.responseBodyFail("Candidate not found"), HttpStatus.OK);

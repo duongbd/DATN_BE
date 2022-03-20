@@ -30,7 +30,7 @@ public class DetailsRoom {
     public DetailsRoom() {
     }
 
-    public DetailsRoom(Room room) {
+    public DetailsRoom(Room room, boolean candidate) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         this.setStartDate(dateFormat.format(room.getStartTime()));
         this.setEndDate(dateFormat.format(room.getEndTime()));
@@ -38,7 +38,11 @@ public class DetailsRoom {
         this.setStartTime(timeFormat.format(room.getStartTime()));
         this.setEndTime(timeFormat.format(room.getEndTime()));
         if (room.getRoomAppKeys() != null) {
-            room.getRoomAppKeys().forEach(roomAppKey -> this.getApps().add(roomAppKey.getApp().getAppName()));
+            if (candidate) {
+                room.getRoomAppKeys().forEach(roomAppKey -> this.getApps().add(roomAppKey.getApp().getProcessName()));
+            } else {
+                room.getRoomAppKeys().forEach(roomAppKey -> this.getApps().add(roomAppKey.getApp().getAppName()));
+            }
         }
         this.setName(room.getName());
         this.setUrls(room.getUrls());

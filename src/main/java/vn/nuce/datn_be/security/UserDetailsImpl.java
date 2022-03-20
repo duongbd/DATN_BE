@@ -65,9 +65,7 @@ public class UserDetailsImpl implements UserDetails {
         userDetails.setAuthorities(authorities);
         userDetails.setPassword(candidateInfo.getPassword());
         userDetails.setCandidateId(candidateInfo.getId());
-        if (candidateInfo.getCandidateStatus() != null && candidateInfo.getCandidateStatus().equals(CandidateStatus.BLOCK)) {
-            userDetails.setBlocked(true);
-        }
+        userDetails.setBlocked(candidateInfo.isBlocked());
         return userDetails;
     }
 

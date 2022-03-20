@@ -72,8 +72,16 @@ public class RoomService {
         return roomRepository.save(room);
     }
 
-    public Room saveByRoomForm(RoomForm roomForm, Long monitorId) throws ParseException {
-        Room room = new Room();
+    public Room saveByRoomForm(RoomForm roomForm, Long monitorId, Long roomId) throws ParseException {
+        boolean updateRoom = false;
+        Room room = null;
+        if (roomId != null) {
+            updateRoom = true;
+            room = roomRepository.findById(roomId).orElse(null);
+        }
+        if (room == null) {
+            room = new Room();
+        }
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         room.setStartTime(DatnUtils.getTimeSpecifyMinute(dateFormat.parse(roomForm.getStartDate() + " " + roomForm.getStartTime())));
         room.setEndTime(DatnUtils.getTimeSpecifyMinute(dateFormat.parse(roomForm.getEndDate() + " " + roomForm.getEndTime())));
@@ -86,6 +94,10 @@ public class RoomService {
             List<App> apps = appRepository.findAllByAppNameIn(roomForm.getApps());
             if (Integer.valueOf(apps.size()).equals(roomForm.getApps().size())) {
                 Room finalRoom = room;
+                if (updateRoom) {
+                    roomAppKeyRepository.deleteAllByRoomFk(room.getId());
+                    room.setRoomAppKeys(new LinkedList<>());
+                }
                 apps.forEach(app -> {
                     RoomAppKey roomAppKey = new RoomAppKey();
                     roomAppKey.setRoomFk(finalRoom.getId());
