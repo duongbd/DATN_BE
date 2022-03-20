@@ -33,6 +33,7 @@ public class RoomForm {
     @NotBlank
     private String endTime;
 
+    @NotBlank
     private String name;
 
     private List<String> apps = new LinkedList<>();

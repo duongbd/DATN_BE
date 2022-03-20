@@ -24,7 +24,6 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 
-@Service
 @Log4j2
 public class GoogleDriveManager {
 
@@ -45,7 +44,7 @@ public class GoogleDriveManager {
     private static final String CREDENTIALS_FILE_PATH = "/datn-2022-342616-43a54422b459.p12";
     private static final String SERVICE_ACCOUNT_ID = "serviceaccount@datn-2022-342616.iam.gserviceaccount.com";
     @Value("${datn.google.rootFolder.id}")
-    private static String ROOT_FOLDER_ID = "12d5PSJxlpdmDI93q3lva50nmryJmgar2";
+    private String ROOT_FOLDER_ID;
 
     /**
      * Creates an authorized Credential object.

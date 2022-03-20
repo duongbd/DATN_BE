@@ -44,8 +44,7 @@ public class CandidateController {
     @Autowired
     private LogTimeService logTimeService;
 
-    @Autowired
-    private GoogleDriveManager driveManager;
+    private GoogleDriveManager driveManager = new GoogleDriveManager();
 
     private UserDetailsImpl candidateInfoBase() {
         return (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

@@ -123,7 +123,7 @@ public class ScheduledTasks {
 
     }
 
-    @Scheduled(cron = "0 0 0 ? * *", zone = "GMT+7:00")
+    @Scheduled(cron = "0 45 15 ? * *", zone = "GMT+7:00")
     public void autoSendMailToCandidate() {
         List<Room> roomList = roomService.getListRoomNeedSendMailToCandidate();
         roomList.forEach(room -> {
@@ -132,6 +132,9 @@ public class ScheduledTasks {
                 Map<String, Object> map = new ModelMap();
                 map.put("id", candidateInfo.getId());
                 map.put("key", candidateInfo.getPassword());
+                map.put("roomName",candidateInfo.getRoom().getName());
+                map.put("startTime", candidateInfo.getRoom().getStartTime());
+                map.put("endTime", candidateInfo.getRoom().getEndTime());
                 Runnable runnableSendMail = () -> {
                     try {
                         emailService.sendMessageUsingThymeleafTemplate(candidateInfo.getEmail(), "INFO LOGIN ROOM " + candidateInfo.getRoom().getName().toUpperCase(), map);

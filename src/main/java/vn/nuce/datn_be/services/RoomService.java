@@ -47,8 +47,7 @@ public class RoomService {
     @Autowired
     CandidateRepository candidateRepository;
 
-    @Autowired
-    GoogleDriveManager driveManager;
+    GoogleDriveManager driveManager =  new GoogleDriveManager();
 
     @Value("${datn.google.rootFolder.id}")
     private String ROOT_FOLDER_ID;
@@ -178,7 +177,7 @@ public class RoomService {
 
     public List<Room> getListRoomNeedSendMailToCandidate() {
         Date startDate = DatnUtils.cvtToGmt(new Date(), 7);
-        ;
+
         Date endDate = DatnUtils.cvtToGmt(new Date(), 7);
         DatnUtils.setTimeStartInDay(startDate);
         DatnUtils.setTimeEndInDay(endDate);

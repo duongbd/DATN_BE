@@ -52,8 +52,7 @@ public class MonitorController {
     @Autowired
     AppService appService;
 
-    @Autowired
-    GoogleDriveManager driveManager;
+    GoogleDriveManager driveManager = new GoogleDriveManager();
 
     @Autowired
     private SimpMessagingTemplate template;

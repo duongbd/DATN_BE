@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import vn.nuce.datn_be.model.enumeration.RoomStatus;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,7 @@ public class Room extends BaseEntity {
     String urls;
 
     @Column
+    @NotBlank
     String name;
 
     @Column(name = "START_TIME", nullable = false)
@@ -32,10 +34,10 @@ public class Room extends BaseEntity {
     private Date endTime;
 
     @ManyToOne
-    @JoinColumn(name = "USER_FK", nullable = false, insertable = false,updatable = false)
+    @JoinColumn(name = "USER_FK", nullable = false, insertable = false, updatable = false)
     private User owner;
 
-    @Column(name ="USER_FK")
+    @Column(name = "USER_FK")
     private Long ownerFk;
 
     @OneToMany(mappedBy = "room")
@@ -47,7 +49,7 @@ public class Room extends BaseEntity {
     @OneToMany(mappedBy = "room")
     List<RoomShares> roomShares;
 
-    @Column(name = "ROOM_STATUS" ,nullable = false)
+    @Column(name = "ROOM_STATUS", nullable = false)
     @Enumerated(EnumType.STRING)
     private RoomStatus roomStatus;
 
