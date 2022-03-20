@@ -24,6 +24,7 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 
+@Service
 @Log4j2
 public class GoogleDriveManager {
 

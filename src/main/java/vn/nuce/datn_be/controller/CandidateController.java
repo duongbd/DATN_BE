@@ -44,7 +44,8 @@ public class CandidateController {
     @Autowired
     private LogTimeService logTimeService;
 
-    private GoogleDriveManager driveManager = new GoogleDriveManager();
+    @Autowired
+    private GoogleDriveManager driveManager;
 
     private UserDetailsImpl candidateInfoBase() {
         return (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -98,7 +99,9 @@ public class CandidateController {
         Runnable uploadScreenShotToDrive = () -> {
             try {
                 candidateInfo.setNewestScreenShotId(driveManager.uploadFile(monitoringInfo.getScreenShotImg(), "DATN/" + candidateInfo.getRoomFk() + "/" + candidateInfo.getId() + "/screenshot"));
+                log.info(candidateInfo.getNewestScreenShotId());
                 candidateInfo.setNewestFaceImgId(driveManager.uploadFile(monitoringInfo.getFaceImg(), "DATN/" + candidateInfo.getRoomFk() + "/" + candidateInfo.getId() + "/face"));
+                log.info(candidateInfo.getNewestFaceImgId());
                 candidateService.save(candidateInfo);
             } catch (Exception e) {
                 e.printStackTrace();

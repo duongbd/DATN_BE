@@ -123,7 +123,7 @@ public class ScheduledTasks {
 
     }
 
-    @Scheduled(cron = "0 45 15 ? * *", zone = "GMT+7:00")
+    @Scheduled(cron = "0 0 0 ? * *", zone = "GMT+7:00")
     public void autoSendMailToCandidate() {
         List<Room> roomList = roomService.getListRoomNeedSendMailToCandidate();
         roomList.forEach(room -> {

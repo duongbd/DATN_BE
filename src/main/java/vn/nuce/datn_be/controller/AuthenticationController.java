@@ -127,7 +127,8 @@ public class AuthenticationController {
     @Autowired
     RoomRepository roomRepository;
 
-    private GoogleDriveManager googleDriveManager = new GoogleDriveManager();
+    @Autowired
+    private GoogleDriveManager googleDriveManager;
 
     @GetMapping(value = "/gg")
     public ResponseEntity<?> auto(){
