@@ -42,7 +42,8 @@ public class RoomService {
     @Autowired
     CandidateRepository candidateRepository;
 
-    GoogleDriveManager driveManager =  new GoogleDriveManager();
+    @Autowired
+    GoogleDriveManager driveManager;
 
     @Value("${datn.google.rootFolder.id}")
     private String ROOT_FOLDER_ID;
