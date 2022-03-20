@@ -230,7 +230,7 @@ public class MonitorController {
             Room room = roomService.findById(roomId);
 
             if (room != null) {
-                if (!room.getOwnerFk().equals(monitorInfoBase().getMonitorId())){
+                if (!room.getOwnerFk().equals(monitorInfoBase().getMonitorId())) {
                     return new ResponseEntity<>(ResponseBody.responseBodyFail(null), HttpStatus.BAD_REQUEST);
                 }
                 for (CandidateInfo candidateInfo : room.getCandidateInfos()) {
@@ -238,6 +238,7 @@ public class MonitorController {
                         return new ResponseEntity<>(ResponseBody.responseBodyFail("Update candidate just only available when mail unsent"), HttpStatus.OK);
                     }
                 }
+                room = roomService.saveByRoomForm(roomForm, monitorInfoBase().getMonitorId(), roomId);
                 try {
                     driveManager.findOrCreateFolder(ROOT_FOLDER_ID, room.getId().toString());
                 } catch (Exception e) {
@@ -339,7 +340,7 @@ public class MonitorController {
             if (candidateInfo.getRoom().getOwnerFk().equals(monitorInfoBase().getMonitorId())) {
                 candidateInfo.setBlocked(true);
                 candidateService.save(candidateInfo);
-                Message message= new Message();
+                Message message = new Message();
                 message.setContent("block");
                 message.setTimeCreate(new Date());
                 this.template.convertAndSend("/notify/notify-block/" + candidateInfo.getId(), new MessageDto(message));
