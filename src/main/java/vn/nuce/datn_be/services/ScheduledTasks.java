@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import vn.nuce.datn_be.enity.CandidateInfo;
 import vn.nuce.datn_be.enity.LogTime;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @Log4j2
+@Transactional
 public class ScheduledTasks {
 
     @Autowired
@@ -58,7 +60,7 @@ public class ScheduledTasks {
         rooms.forEach(room -> {
             if (room.getStartTime().before(DatnUtils.cvtToGmt(new Date(), 7)) && room.getEndTime().after(DatnUtils.cvtToGmt(new Date(), 7))) {
                 room.setRoomStatus(RoomStatus.ACTIVE);
-                roomService.save(room);
+                roomService.updateRoomStatus(RoomStatus.ACTIVE, room);
                 this.template.convertAndSend("/chat/notify-status/room/" + room.getId(), NotifyRoomStatus.notifyRoomStatus(room));
                 LogTime logTime = new LogTime();
                 logTime.setRoomFk(room.getId());
@@ -88,7 +90,8 @@ public class ScheduledTasks {
         rooms.forEach(room -> {
             if (room.getStartTime().before(DatnUtils.cvtToGmt(new Date(), 7)) && room.getEndTime().before(DatnUtils.cvtToGmt(new Date(), 7))) {
                 room.setRoomStatus(RoomStatus.ENDED);
-                roomService.save(room);
+                roomService.updateRoomStatus(RoomStatus.ENDED, room);
+//                roomService.save(room);
                 this.template.convertAndSend("/chat/notify-status/room/" + room.getId(), NotifyRoomStatus.notifyRoomStatus(room));
                 this.template.convertAndSend("/chat/notify-status/room/" + room.getOwner().getEmail(), NotifyRoomStatus.notifyRoomStatus(room));
                 LogTime logTime = new LogTime();

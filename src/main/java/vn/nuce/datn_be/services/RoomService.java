@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.nuce.datn_be.enity.App;
+import vn.nuce.datn_be.enity.CandidateInfo;
 import vn.nuce.datn_be.enity.Room;
 import vn.nuce.datn_be.enity.RoomAppKey;
 import vn.nuce.datn_be.model.dto.RoomForm;
@@ -15,10 +16,7 @@ import vn.nuce.datn_be.utils.DatnUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.DateFormat;
@@ -27,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
-@Transactional
+//@Transactional
 public class RoomService {
     @Autowired
     protected RoomRepository roomRepository;
@@ -222,5 +220,14 @@ public class RoomService {
         roomRepository.deleteById(roomId);
         // delete img
         driveManager.deleteFile(driveManager.searchFolderId(ROOT_FOLDER_ID, String.valueOf(roomId)));
+    }
+
+    void updateRoomStatus(RoomStatus roomStatus, Room room){
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaUpdate<Room> criteria = builder.createCriteriaUpdate(Room.class);
+        Root<Room> root = criteria.from(Room.class);
+        criteria.set("roomStatus", roomStatus);
+        criteria.where(builder.equal(root.get("id"), room.getId()));
+        entityManager.createQuery(criteria).executeUpdate();
     }
 }
