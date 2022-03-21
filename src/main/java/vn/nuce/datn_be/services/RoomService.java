@@ -78,6 +78,7 @@ public class RoomService {
         if (roomId != null) {
             updateRoom = true;
             room = roomRepository.findById(roomId).orElse(null);
+            if (room == null) return null;
         }
         if (room == null) {
             room = new Room();
