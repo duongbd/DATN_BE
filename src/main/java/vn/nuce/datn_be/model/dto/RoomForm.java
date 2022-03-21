@@ -19,6 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 public class RoomForm {
+    @NotBlank
     String urls;
 
     @NotBlank
