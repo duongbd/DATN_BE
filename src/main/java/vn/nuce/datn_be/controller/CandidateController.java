@@ -16,16 +16,15 @@ import vn.nuce.datn_be.model.enumeration.CandidateStatus;
 import vn.nuce.datn_be.model.enumeration.MonitoringStatus;
 import vn.nuce.datn_be.model.form.MonitoringInfo;
 import vn.nuce.datn_be.model.form.NotificationMonitor;
+import vn.nuce.datn_be.model.form.ViolationForm;
 import vn.nuce.datn_be.security.UserDetailsImpl;
-import vn.nuce.datn_be.services.CandidateService;
-import vn.nuce.datn_be.services.GoogleDriveManager;
-import vn.nuce.datn_be.services.LogTimeService;
-import vn.nuce.datn_be.services.RoomService;
+import vn.nuce.datn_be.services.*;
 import vn.nuce.datn_be.utils.DatnUtils;
 
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
@@ -72,30 +71,9 @@ public class CandidateController {
     @PostMapping("/update-info")
     public ResponseEntity<?> postUpdateMonitoringCandidate(@Valid @ModelAttribute MonitoringInfo monitoringInfo) {
         CandidateInfo candidateInfo = candidateService.findById(candidateInfoBase().getCandidateId());
-        //update to log table
-        LogTime logTime = new LogTime();
-        logTime.setTimeCreate(new Date());
-        logTime.setRoomFk(candidateInfo.getRoomFk());
-        monitoringInfo.setCandidateId(candidateInfo.getId());
-        monitoringInfo.setNumberId(candidateInfo.getNumberId());
         candidateInfo.setLastSaw(DatnUtils.cvtToGmt(new Date(), 7));
-        if (candidateInfo.getCandidateStatus().equals(CandidateStatus.DISCONNECTED) || candidateInfo.getCandidateStatus().equals(CandidateStatus.OFFLINE)) {
-            candidateInfo.setCandidateStatus(CandidateStatus.ONLINE);
-        }
-        candidateService.save(candidateInfo);
-        switch (Objects.requireNonNull(MonitoringStatus.getMonitoringStatusByName(monitoringInfo.getMonitoringStatus()))) {
-            case NORMAL:
-                logTime.setContent("CandidateId: " + candidateInfo.getId() + " - " + "numberId: " + candidateInfo.getNumberId() + " still normal");
-                break;
-            case WARN:
-            case ALERT:
-                logTime.setContent("CandidateId: " + candidateInfo.getId() + " - " + "numberId: " + candidateInfo.getNumberId() + " has " + monitoringInfo.getMonitoringStatus() + ": " + monitoringInfo.getViolationError() + " with proof - " + monitoringInfo.getViolationInfo());
-                Runnable runnableAlert = () -> {
-                    this.template.convertAndSend("/notify/monitor/" + candidateInfo.getRoomFk(), new NotificationMonitor(monitoringInfo));
-                };
-                runnableAlert.run();
-                break;
-        }
+        candidateService.updateStatusOnlCandidate(candidateInfo.getId());
+        candidateService.updateLastSawCandidate(candidateInfo.getId(), candidateInfo.getLastSaw());
         Runnable uploadScreenShotToDrive = () -> {
             try {
                 candidateInfo.setNewestScreenShotId(driveManager.uploadFile(monitoringInfo.getScreenShotImg(), "DATN/" + candidateInfo.getRoomFk() + "/" + candidateInfo.getId() + "/screenshot"));
@@ -108,6 +86,31 @@ public class CandidateController {
             }
         };
         uploadScreenShotToDrive.run();
+        return new ResponseEntity<>(ResponseBody.responseBodySuccess(null), HttpStatus.OK);
+    }
+
+    @PostMapping("/violation")
+    public ResponseEntity<?> postViolationCandidate(@RequestBody @Valid ViolationForm violationForm) {
+        CandidateInfo candidateInfo = candidateService.processUpdateInfo(candidateInfoBase().getCandidateId());
+        LogTime logTime = new LogTime();
+        logTime.setTimeCreate(new Date());
+        logTime.setRoomFk(candidateInfo.getRoomFk());
+        violationForm.setCandidateId(candidateInfo.getId());
+        violationForm.setNumberId(candidateInfo.getNumberId());
+        log.info("CandidateId: " + candidateInfo.getId() + " violation");
+        switch (Objects.requireNonNull(MonitoringStatus.getMonitoringStatusByName(violationForm.getMonitoringStatus()))) {
+            case NORMAL:
+                logTime.setContent("CandidateId: " + candidateInfo.getId() + " - " + "numberId: " + candidateInfo.getNumberId() + " still normal");
+                break;
+            case WARN:
+            case ALERT:
+                logTime.setContent("CandidateId: " + candidateInfo.getId() + " - " + "numberId: " + candidateInfo.getNumberId() + " has " + violationForm.getMonitoringStatus() + ": " + violationForm.getViolationError() + " with proof - " + violationForm.getViolationInfo());
+                Runnable runnableAlert = () -> {
+                    this.template.convertAndSend("/notify/monitor/" + candidateInfo.getRoomFk(), new NotificationMonitor(violationForm));
+                };
+                runnableAlert.run();
+                break;
+        }
         logTimeService.save(logTime);
         return new ResponseEntity<>(ResponseBody.responseBodySuccess(null), HttpStatus.OK);
     }

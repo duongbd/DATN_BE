@@ -1,5 +1,6 @@
 package vn.nuce.datn_be.controller;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -33,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Predicate;
 
+@Log4j2
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RestController
 @RequestMapping("/monitor")
@@ -343,7 +345,8 @@ public class MonitorController {
         if (candidateInfo != null) {
             if (candidateInfo.getRoom().getOwnerFk().equals(monitorInfoBase().getMonitorId())) {
                 candidateInfo.setBlocked(true);
-                candidateService.save(candidateInfo);
+                candidateService.blockCandidate(candidateInfo.getId());
+                log.info("Blocked candidateId: " + candidateInfo.getId());
                 Message message = new Message();
                 message.setContent("block");
                 message.setTimeCreate(new Date());

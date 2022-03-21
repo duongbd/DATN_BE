@@ -12,7 +12,7 @@ public class NotificationMonitor {
     String violationInfo;       // bằng chứng lỗi vi phạm
     String monitoringStatus;
 
-    public NotificationMonitor(MonitoringInfo info) {
+    public NotificationMonitor(ViolationForm info) {
         this.monitoringStatus = info.getMonitoringStatus();
         this.violationError = info.getViolationError() != null ? info.getViolationError() : "";
         this.violationCode = info.getViolationInfo() != null ? info.getViolationCode() : "";

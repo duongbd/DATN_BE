@@ -9,12 +9,6 @@ import vn.nuce.datn_be.anotation.validation.MonitoringStatus;
 @Getter
 @Setter
 public class MonitoringInfo {
-    String violationError;      // lỗi vi phạm
-    String violationCode;       // mã lỗi vi phạm
-    String violationInfo;       // bằng chứng lỗi vi phạm
-    @NotNull
-    @MonitoringStatus
-    String monitoringStatus;
     @NotNull
     @vn.nuce.datn_be.anotation.validation.MultipartFile
     MultipartFile screenShotImg;
