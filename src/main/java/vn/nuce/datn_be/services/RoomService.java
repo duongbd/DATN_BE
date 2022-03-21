@@ -89,7 +89,9 @@ public class RoomService {
         room.setRoomStatus(RoomStatus.INACTIVE);
         room.setOwnerFk(monitorId);
         room.setUrls(roomForm.getUrls());
-        room = roomRepository.save(room);
+        if (updateRoom) {
+            room = roomRepository.save(room);
+        }
         if (!roomForm.getApps().isEmpty()) {
             List<App> apps = appRepository.findAllByAppNameIn(roomForm.getApps());
             if (Integer.valueOf(apps.size()).equals(roomForm.getApps().size())) {
@@ -112,8 +114,12 @@ public class RoomService {
                     finalRoom.getRoomAppKeys().add(roomAppKey);
                 });
 //                roomRepository.save(finalRoom);
-            } else
+            } else {
+                if (!updateRoom){
+                    roomRepository.deleteById(room.getId());
+                }
                 return null;
+            }
         }
         return room;
     }
