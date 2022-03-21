@@ -174,7 +174,7 @@ public class MonitorController {
     }
 
     @PostMapping(value = {"/room/update"})
-    public ResponseEntity<?> postCreateRoomDefault(@Valid @ModelAttribute RoomForm roomForm, @RequestParam(name = "roomId") Long roomId) {
+    public ResponseEntity<?> postUpdateRoomDefault(@Valid @ModelAttribute RoomForm roomForm, @RequestParam(name = "roomId") Long roomId) {
         try {
             List<List<String>> rowDataList = null;
             if (roomForm.getFile() != null && roomForm.getFile().getSize() > 0) {
@@ -238,25 +238,29 @@ public class MonitorController {
                     }
                 }
                 room = roomService.saveByRoomForm(roomForm, monitorInfoBase().getMonitorId(), roomId);
-                try {
-                    driveManager.findOrCreateFolder(ROOT_FOLDER_ID, room.getId().toString());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-                if (rowDataList != null) {
-                    candidateService.deleteAllByRoomFk(roomId);
-                    for (int i = 1; i < rowDataList.size(); i++) {
-                        CandidateInfo info = new CandidateInfo();
-                        info.setInfo(rowDataList.get(i).get(2));
-                        info.setNumberId(Long.valueOf(rowDataList.get(i).get(3)));
-                        info.setCandidateName(rowDataList.get(i).get(0));
-                        info.setRoomFk(room.getId());
-                        info.setEmail(rowDataList.get(i).get(1));
-                        info.setPassword(DatnUtils.randomPassword(7));
-                        candidateService.save(info);
+                if (room != null) {
+                    try {
+                        driveManager.findOrCreateFolder(ROOT_FOLDER_ID, room.getId().toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
+                    if (rowDataList != null) {
+                        candidateService.deleteAllByRoomFk(roomId);
+                        for (int i = 1; i < rowDataList.size(); i++) {
+                            CandidateInfo info = new CandidateInfo();
+                            info.setInfo(rowDataList.get(i).get(2));
+                            info.setNumberId(Long.valueOf(rowDataList.get(i).get(3)));
+                            info.setCandidateName(rowDataList.get(i).get(0));
+                            info.setRoomFk(room.getId());
+                            info.setEmail(rowDataList.get(i).get(1));
+                            info.setPassword(DatnUtils.randomPassword(7));
+                            candidateService.save(info);
+                        }
                     }
                 }
+            } else {
+                new ResponseEntity<>(ResponseBody.responseBodyFail("Room not found"), HttpStatus.OK);
             }
 
             return room != null
