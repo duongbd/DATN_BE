@@ -74,8 +74,8 @@ public class CandidateService {
         candidateInfo.setLastSaw(DatnUtils.cvtToGmt(new Date(), 7));
         if (candidateInfo.getCandidateStatus().equals(CandidateStatus.DISCONNECTED) || candidateInfo.getCandidateStatus().equals(CandidateStatus.OFFLINE)) {
             candidateInfo.setCandidateStatus(CandidateStatus.ONLINE);
+            updateStatusOnlCandidate(candidateId);
         }
-        updateStatusOnlCandidate(candidateId);
         updateLastSawCandidate(candidateId, candidateInfo.getLastSaw());
 //        candidateRepository.updateCandidateStatusOnlineById(candidateInfo.getId());
 //        candidateRepository.updateLastSawById(candidateInfo.getId(),candidateInfo.getLastSaw());
