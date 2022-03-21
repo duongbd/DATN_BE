@@ -17,6 +17,7 @@ import java.util.Set;
 @Setter
 public class Room extends BaseEntity {
     @Column
+    @NotBlank
     String urls;
 
     @Column
