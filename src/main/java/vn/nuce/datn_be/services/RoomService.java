@@ -89,7 +89,7 @@ public class RoomService {
         room.setRoomStatus(RoomStatus.INACTIVE);
         room.setOwnerFk(monitorId);
         room.setUrls(roomForm.getUrls());
-        if (updateRoom) {
+        if (!updateRoom) {
             room = roomRepository.save(room);
         }
         if (!roomForm.getApps().isEmpty()) {
