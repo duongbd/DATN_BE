@@ -11,11 +11,15 @@ public class NotificationMonitor {
     String violationCode;       // mã lỗi vi phạm
     String violationInfo;       // bằng chứng lỗi vi phạm
     String monitoringStatus;
+    String candidateId;
+    Long numberId;
 
     public NotificationMonitor(ViolationForm info) {
         this.monitoringStatus = info.getMonitoringStatus();
         this.violationError = info.getViolationError() != null ? info.getViolationError() : "";
         this.violationCode = info.getViolationInfo() != null ? info.getViolationCode() : "";
         this.violationInfo = info.getViolationInfo() != null ? info.getViolationInfo() : "";
+        this.candidateId = info.getCandidateId();
+        this.numberId = info.getNumberId();
     }
 }
