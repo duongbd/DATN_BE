@@ -87,7 +87,7 @@ public class CandidateController {
     }
 
     @PostMapping("/violation")
-    public ResponseEntity<?> postViolationCandidate(@RequestBody @Valid ViolationForm violationForm) {
+    public ResponseEntity<?> postViolationCandidate(@ModelAttribute @Valid ViolationForm violationForm) {
         CandidateInfo candidateInfo = candidateService.processUpdateInfo(candidateInfoBase().getCandidateId());
         LogTime logTime = new LogTime();
         logTime.setTimeCreate(new Date());
