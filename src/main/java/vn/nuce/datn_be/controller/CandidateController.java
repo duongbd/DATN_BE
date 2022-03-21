@@ -69,10 +69,7 @@ public class CandidateController {
 
     @PostMapping("/update-info")
     public ResponseEntity<?> postUpdateMonitoringCandidate(@Valid @ModelAttribute MonitoringInfo monitoringInfo) {
-        CandidateInfo candidateInfo = candidateService.findById(candidateInfoBase().getCandidateId());
-        candidateInfo.setLastSaw(DatnUtils.cvtToGmt(new Date(), 7));
-        candidateService.updateStatusOnlCandidate(candidateInfo.getId());
-        candidateService.updateLastSawCandidate(candidateInfo.getId(), candidateInfo.getLastSaw());
+        CandidateInfo candidateInfo = candidateService.processUpdateInfo(candidateInfoBase().getCandidateId());
         Runnable uploadScreenShotToDrive = () -> {
             try {
                 candidateInfo.setNewestScreenShotId(driveManager.uploadFile(monitoringInfo.getScreenShotImg(), "DATN/" + candidateInfo.getRoomFk() + "/" + candidateInfo.getId() + "/screenshot"));
