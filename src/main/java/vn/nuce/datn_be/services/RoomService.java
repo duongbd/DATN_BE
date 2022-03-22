@@ -3,9 +3,7 @@ package vn.nuce.datn_be.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import vn.nuce.datn_be.enity.App;
-import vn.nuce.datn_be.enity.CandidateInfo;
 import vn.nuce.datn_be.enity.Room;
 import vn.nuce.datn_be.enity.RoomAppKey;
 import vn.nuce.datn_be.model.dto.RoomForm;
@@ -17,8 +15,6 @@ import vn.nuce.datn_be.utils.DatnUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -209,7 +205,7 @@ public class RoomService {
 
     public void processDeleteRoom(Long roomId) throws Exception {
         //delete log
-        logTimeRepository.deleteAllAllByRoomFk(roomId);
+        logTimeRepository.deleteAllByRoomFk(roomId);
         //delete message
         messageRepository.deleteAllByRoomFk(roomId);
         //delete roomAppKey

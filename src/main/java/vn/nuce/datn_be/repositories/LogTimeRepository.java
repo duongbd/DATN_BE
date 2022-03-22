@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface LogTimeRepository extends JpaRepository<LogTime, Long> {
     List<LogTime> findAllByRoomFk(Long roomId);
-    void deleteAllAllByRoomFk(Long roomId);
+    void deleteAllByRoomFk(Long roomId);
 }
