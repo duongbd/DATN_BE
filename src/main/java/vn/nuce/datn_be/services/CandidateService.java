@@ -51,6 +51,7 @@ public class CandidateService {
         Root<CandidateInfo> root = criteria.from(CandidateInfo.class);
         criteria.set("candidateStatus", CandidateStatus.ONLINE);
         criteria.where(builder.equal(root.get("id"), candidateId));
+        entityManager.joinTransaction();
         entityManager.createQuery(criteria).executeUpdate();
 //        candidateRepository.updateCandidateStatusOnlineById(candidateId);
     }
@@ -61,6 +62,7 @@ public class CandidateService {
         Root<CandidateInfo> root = criteria.from(CandidateInfo.class);
         criteria.set("lastSaw", lastSaw);
         criteria.where(builder.equal(root.get("id"), candidateId));
+        entityManager.joinTransaction();
         entityManager.createQuery(criteria).executeUpdate();
 //        candidateRepository.updateLastSawById(candidateId, lastSaw);
     }
