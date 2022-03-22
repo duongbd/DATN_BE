@@ -74,8 +74,10 @@ public class CandidateController {
         Runnable uploadScreenShotToDrive = () -> {
             try {
                 candidateInfo.setNewestScreenShotId(driveManager.uploadFile(monitoringInfo.getScreenShotImg(), "DATN/" + candidateInfo.getRoomFk() + "/" + candidateInfo.getId() + "/screenshot"));
+                log.info(candidateInfo.getNewestScreenShotId());
                 candidateInfo.setNewestFaceImgId(driveManager.uploadFile(monitoringInfo.getFaceImg(), "DATN/" + candidateInfo.getRoomFk() + "/" + candidateInfo.getId() + "/face"));
-                candidateService.save(candidateInfo);
+                log.info(candidateInfo.getNewestFaceImgId());
+                candidateService.updateCandidateImageIdNewest(candidateInfo.getNewestScreenShotId(), candidateInfo.getNewestFaceImgId(), candidateInfo.getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
