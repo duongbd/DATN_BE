@@ -67,6 +67,17 @@ public class CandidateService {
 //        candidateRepository.updateLastSawById(candidateId, lastSaw);
     }
 
+    public void updateCandidateImageIdNewest(String screenshotId, String faceImgId, String candidateId){
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaUpdate<CandidateInfo> criteria = builder.createCriteriaUpdate(CandidateInfo.class);
+        Root<CandidateInfo> root = criteria.from(CandidateInfo.class);
+        criteria.set("newestScreenShotId", screenshotId);
+        criteria.set("newestFaceImgId", faceImgId);
+        criteria.where(builder.equal(root.get("id"), candidateId));
+        entityManager.joinTransaction();
+        entityManager.createQuery(criteria).executeUpdate();
+    }
+
     public void blockCandidate(String candidateId){
         candidateRepository.blockCandidate(candidateId);
     }

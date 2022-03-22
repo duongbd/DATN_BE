@@ -77,7 +77,7 @@ public class CandidateController {
                 log.info(candidateInfo.getNewestScreenShotId());
                 candidateInfo.setNewestFaceImgId(driveManager.uploadFile(monitoringInfo.getFaceImg(), "DATN/" + candidateInfo.getRoomFk() + "/" + candidateInfo.getId() + "/face"));
                 log.info(candidateInfo.getNewestFaceImgId());
-                candidateService.save(candidateInfo);
+                candidateService.updateCandidateImageIdNewest(candidateInfo.getNewestScreenShotId(), candidateInfo.getNewestFaceImgId(), candidateInfo.getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
