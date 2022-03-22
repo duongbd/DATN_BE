@@ -79,6 +79,7 @@ public class AuthenticationController {
     @PostMapping(value = "/candidate/login")
     public ResponseEntity<?> loginCandidate(@RequestBody CandidateLoginForm candidateLoginForm) {
         try {
+            String token = authenticate(candidateLoginForm.getUsername(), candidateLoginForm.getPassword());
             Room room = candidateService.findById(candidateLoginForm.getUsername()).getRoom();
             if (room.getRoomStatus().equals(RoomStatus.ACTIVE)) {
                 CandidateInfo candidateInfo = candidateService.findById(candidateLoginForm.getUsername());
@@ -89,7 +90,6 @@ public class AuthenticationController {
                 candidateInfo.setLastSaw(DatnUtils.cvtToGmt(new Date(), 7));
                 candidateService.save(candidateInfo);
                 this.template.convertAndSend("/chat/notify-status/candidate/" + candidateInfo.getRoomFk(), NotifyCandidateStatus.notifyCandidateStatusOnline(candidateInfo));
-                String token = authenticate(candidateLoginForm.getUsername(), candidateLoginForm.getPassword());
                 return new ResponseEntity<>(ResponseBody.responseBodySuccess(new LoginSuccessDto(token)), HttpStatus.OK);
             }
             return new ResponseEntity<>(ResponseBody.responseBodyFail("Room is not opened"), HttpStatus.OK);
