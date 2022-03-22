@@ -3,6 +3,7 @@ package vn.nuce.datn_be.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.nuce.datn_be.enity.App;
 import vn.nuce.datn_be.enity.Room;
 import vn.nuce.datn_be.enity.RoomAppKey;
@@ -21,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
-//@Transactional
+@Transactional
 public class RoomService {
     @Autowired
     protected RoomRepository roomRepository;
@@ -224,6 +225,7 @@ public class RoomService {
         Root<Room> root = criteria.from(Room.class);
         criteria.set("roomStatus", roomStatus);
         criteria.where(builder.equal(root.get("id"), room.getId()));
+        entityManager.joinTransaction();
         entityManager.createQuery(criteria).executeUpdate();
     }
 }
