@@ -118,7 +118,7 @@ public class ScheduledTasks {
                     if (DatnUtils.cvtToGmt(new Date(), 7).after(lastSawAfter6M.getTime()) && candidateInfo.getCandidateStatus().equals(CandidateStatus.ONLINE)){
                         candidateInfo.setCandidateStatus(CandidateStatus.DISCONNECTED);
                         candidateService.save(candidateInfo);
-                        this.template.convertAndSend("/chat/notify-status/candidate/" + candidateInfo.getRoomFk(), NotifyCandidateStatus.notifyCandidateStatusDisconnected(candidateInfo));
+                        this.template.convertAndSend("/chat/notify-status/candidate/" + candidateInfo.getRoomFk(), NotifyCandidateStatus.notifyCandidateStatusDisconnected(candidateInfo, false));
                     }
                 }
             });

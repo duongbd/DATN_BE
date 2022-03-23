@@ -89,7 +89,7 @@ public class AuthenticationController {
                 candidateInfo.setCandidateStatus(CandidateStatus.ONLINE);
                 candidateInfo.setLastSaw(DatnUtils.cvtToGmt(new Date(), 7));
                 candidateService.save(candidateInfo);
-                this.template.convertAndSend("/chat/notify-status/candidate/" + candidateInfo.getRoomFk(), NotifyCandidateStatus.notifyCandidateStatusOnline(candidateInfo));
+                this.template.convertAndSend("/chat/notify-status/candidate/" + candidateInfo.getRoomFk(), NotifyCandidateStatus.notifyCandidateStatusOnline(candidateInfo, true));
                 return new ResponseEntity<>(ResponseBody.responseBodySuccess(new LoginSuccessDto(token)), HttpStatus.OK);
             }
             return new ResponseEntity<>(ResponseBody.responseBodyFail("Room is not opened"), HttpStatus.OK);

@@ -16,6 +16,7 @@ import vn.nuce.datn_be.model.enumeration.CandidateStatus;
 import vn.nuce.datn_be.model.enumeration.MonitoringStatus;
 import vn.nuce.datn_be.model.form.MonitoringInfo;
 import vn.nuce.datn_be.model.form.NotificationMonitor;
+import vn.nuce.datn_be.model.form.NotifyCandidateStatus;
 import vn.nuce.datn_be.model.form.ViolationForm;
 import vn.nuce.datn_be.security.UserDetailsImpl;
 import vn.nuce.datn_be.services.*;
@@ -110,5 +111,13 @@ public class CandidateController {
         }
         logTimeService.save(logTime);
         return new ResponseEntity<>(ResponseBody.responseBodySuccess(null), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/logout")
+    public ResponseEntity<?> logoutMonitor() {
+        SecurityContextHolder.clearContext();
+        CandidateInfo candidateInfo = candidateService.findById(candidateInfoBase().getCandidateId());
+        this.template.convertAndSend("/chat/notify-status/candidate/" + candidateInfo.getRoomFk(), NotifyCandidateStatus.notifyCandidateStatusDisconnected(candidateInfo, true));
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 }
