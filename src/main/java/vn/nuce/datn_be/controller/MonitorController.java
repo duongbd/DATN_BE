@@ -345,13 +345,28 @@ public class MonitorController {
         if (candidateInfo != null) {
             if (candidateInfo.getRoom().getOwnerFk().equals(monitorInfoBase().getMonitorId())) {
                 candidateInfo.setBlocked(true);
-                candidateService.blockCandidate(candidateInfo.getId());
+                candidateService.blockCandidate(candidateInfo.getId(), candidateInfo.isBlocked());
                 log.info("Blocked candidateId: " + candidateInfo.getId());
                 Message message = new Message();
                 message.setContent("block");
                 message.setTimeCreate(new Date());
                 this.template.convertAndSend("/notify/notify-block/" + candidateInfo.getId(), new MessageDto(message));
 //                this.template.convertAndSend("/chat/" + candidateInfo.getRoomFk(), new MessageDto(message));
+                return new ResponseEntity<>(ResponseBody.responseBodySuccess(null), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(ResponseBody.responseBodyFail("You not have permission with this candidate"), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(ResponseBody.responseBodyFail("Candidate not found"), HttpStatus.OK);
+    }
+
+    @PostMapping("/unblock-candidate")
+    public ResponseEntity<?> unblockCandidate(@RequestParam(name = "candidateId") String candidateId) {
+        CandidateInfo candidateInfo = candidateService.findById(candidateId);
+        if (candidateInfo != null) {
+            if (candidateInfo.getRoom().getOwnerFk().equals(monitorInfoBase().getMonitorId())) {
+                candidateInfo.setBlocked(false);
+                candidateService.blockCandidate(candidateInfo.getId(), candidateInfo.isBlocked());
+                log.info("Unblocked candidateId: " + candidateInfo.getId());
                 return new ResponseEntity<>(ResponseBody.responseBodySuccess(null), HttpStatus.OK);
             }
             return new ResponseEntity<>(ResponseBody.responseBodyFail("You not have permission with this candidate"), HttpStatus.OK);

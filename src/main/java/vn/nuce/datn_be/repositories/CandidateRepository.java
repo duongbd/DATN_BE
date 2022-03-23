@@ -31,6 +31,6 @@ public interface CandidateRepository extends JpaRepository<CandidateInfo, String
     void updateLastSawById(@Param("id") String id, @Param("lastSaw") Date lastSaw);
 
     @Modifying
-    @Query(value = "update CandidateInfo set isBlocked= true where id =:id")
-    void blockCandidate(@Param("id") String id);
+    @Query(value = "update CandidateInfo set isBlocked=:state where id =:id")
+    void blockCandidate(@Param("state") boolean state,@Param("id") String id);
 }

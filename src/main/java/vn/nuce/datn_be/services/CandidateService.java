@@ -25,27 +25,27 @@ public class CandidateService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public CandidateInfo findByNumberId(Long numberId){
+    public CandidateInfo findByNumberId(Long numberId) {
         return candidateRepository.findByNumberId(numberId).orElse(null);
     }
 
-    public CandidateInfo save(CandidateInfo candidateInfo){
+    public CandidateInfo save(CandidateInfo candidateInfo) {
         return candidateRepository.save(candidateInfo);
     }
 
-    public List<CandidateInfo> findAllCandidateByRoomId(Long roomId){
+    public List<CandidateInfo> findAllCandidateByRoomId(Long roomId) {
         return candidateRepository.findAllByRoomFk(roomId);
     }
 
-    public CandidateInfo findById(String username){
+    public CandidateInfo findById(String username) {
         return candidateRepository.findById(username).orElse(null);
     }
 
-    public void deleteAllByRoomFk(Long roomId){
+    public void deleteAllByRoomFk(Long roomId) {
         candidateRepository.deleteAllByRoomFk(roomId);
     }
 
-    public void updateStatusOnlCandidate(String candidateId){
+    public void updateStatusOnlCandidate(String candidateId) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaUpdate<CandidateInfo> criteria = builder.createCriteriaUpdate(CandidateInfo.class);
         Root<CandidateInfo> root = criteria.from(CandidateInfo.class);
@@ -56,7 +56,7 @@ public class CandidateService {
 //        candidateRepository.updateCandidateStatusOnlineById(candidateId);
     }
 
-    public void updateLastSawCandidate(String candidateId, Date lastSaw){
+    public void updateLastSawCandidate(String candidateId, Date lastSaw) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaUpdate<CandidateInfo> criteria = builder.createCriteriaUpdate(CandidateInfo.class);
         Root<CandidateInfo> root = criteria.from(CandidateInfo.class);
@@ -67,7 +67,7 @@ public class CandidateService {
 //        candidateRepository.updateLastSawById(candidateId, lastSaw);
     }
 
-    public void updateCandidateImageIdNewest(String screenshotId, String faceImgId, String candidateId){
+    public void updateCandidateImageIdNewest(String screenshotId, String faceImgId, String candidateId) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaUpdate<CandidateInfo> criteria = builder.createCriteriaUpdate(CandidateInfo.class);
         Root<CandidateInfo> root = criteria.from(CandidateInfo.class);
@@ -78,11 +78,11 @@ public class CandidateService {
         entityManager.createQuery(criteria).executeUpdate();
     }
 
-    public void blockCandidate(String candidateId){
-        candidateRepository.blockCandidate(candidateId);
+    public void blockCandidate(String candidateId, boolean state) {
+        candidateRepository.blockCandidate(state, candidateId);
     }
 
-    public CandidateInfo processUpdateInfo(String candidateId){
+    public CandidateInfo processUpdateInfo(String candidateId) {
         CandidateInfo candidateInfo = findById(candidateId);
         candidateInfo.setLastSaw(DatnUtils.cvtToGmt(new Date(), 7));
         if (candidateInfo.getCandidateStatus().equals(CandidateStatus.DISCONNECTED) || candidateInfo.getCandidateStatus().equals(CandidateStatus.OFFLINE)) {
